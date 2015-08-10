@@ -2,7 +2,7 @@
  *  C.Extension.Manager //TODO description
  */
 
-'use strict";
+'use strict';
 
 C.Extension.Manager = new (C.Utils.Inherit(function (base) {
     base();
