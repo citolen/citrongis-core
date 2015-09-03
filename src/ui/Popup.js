@@ -40,8 +40,10 @@ C.UI.Popup = function (feature, options) {
     }
 };
 
-C.UI.Popup.prototype.open = function () {
-    C.UI.PopupManager.register(this);
+C.UI.Popup.prototype.open = function (event) {
+
+    event = event.data.originalEvent;
+    C.UI.PopupManager.register(this, event);
 
 };
 

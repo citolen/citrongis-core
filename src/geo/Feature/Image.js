@@ -63,19 +63,42 @@ C.Geo.Feature.Image.prototype.load = function () {
         return;
     }
 
-    this._loader = new PIXI.ImageLoader(this._source);
     var self = this;
-    this._loader.on('loaded', function () {
-        self.__texture = self._loader.texture;
+
+    this._loader = new PIXI.loaders.Loader().add('image', this._source, {
+        loadType: 2
+    });
+
+    this._loader.once('complete', function (loader, resources) {
+
+        self.__texture = resources.image.texture;
+
         self.emit('loaded', self);
         self._mask |= C.Geo.Feature.Image.MaskIndex.SOURCE;
         self.emit('sourceChanged', self._source);
         self.makeDirty();
+
     });
-    this._loader.on('error', function () {
+
+    this._loader.once('error', function () {
         self.emit('error', self);
     });
+
     this._loader.load();
+
+//    this._loader = new PIXI.ImageLoader(this._source);
+//    var self = this;
+//    this._loader.on('loaded', function () {
+//        self.__texture = self._loader.texture;
+//        self.emit('loaded', self);
+//        self._mask |= C.Geo.Feature.Image.MaskIndex.SOURCE;
+//        self.emit('sourceChanged', self._source);
+//        self.makeDirty();
+//    });
+//    this._loader.on('error', function () {
+//        self.emit('error', self);
+//    });
+//    this._loader.load();
 };
 
 //TODO remove PIXI dependency

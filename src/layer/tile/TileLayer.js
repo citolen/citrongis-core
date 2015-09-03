@@ -27,7 +27,7 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
     this._cache = new LRUCache({
         max: 200,
         dispose: function (k, v) {
-            v.feature.__graphics.texture.baseTexture.unloadFromGPU();
+            v.feature.__graphics.texture.baseTexture.destroy();
         }
     });
 

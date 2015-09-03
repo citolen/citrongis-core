@@ -67,10 +67,22 @@ C.Geo.Feature.Feature.prototype.makeDirty = function () {
     this.emit('dirty', this);
 };
 
-C.Geo.Feature.Feature.prototype.__click = function (evt, data) {
-    this.emit('click', this, evt, data);
+C.Geo.Feature.Feature.prototype.__click = function (event) {
+    this.emit('click', this, event);
 };
 
 C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {
 
+};
+
+C.Geo.Feature.Feature.prototype.bindPopup = function (popup) {
+
+    this.on('click', function (feature, event) {
+
+        console.log(arguments);
+        popup.open(event);
+
+    });
+
+    return popup;
 };
