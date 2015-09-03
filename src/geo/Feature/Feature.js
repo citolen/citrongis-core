@@ -20,6 +20,8 @@ C.Geo.Feature.Feature = C.Utils.Inherit(function (base, type, options) {
 
     this._events = {};
 
+    this._metadata = options.metadata || {};
+
 }, EventEmitter, 'C.Geo.Feature.Feature');
 
 C.Geo.Feature.Feature.OpacityMask = 1024;
@@ -35,6 +37,18 @@ C.Geo.Feature.Feature.FeatureType = {
     IMAGE: 1,
     LINE: 2,
     POLYGON: 3
+};
+
+C.Geo.Feature.Feature.prototype.set = function (key, value) {
+    this._metadata[key] = value;
+    return value;
+};
+
+C.Geo.Feature.Feature.prototype.get = function (key) {
+    if (key in this._metadata) {
+        return this._metadata[key];
+    }
+    return null;
 };
 
 C.Geo.Feature.Feature.prototype.opacity = function (opacity) {
@@ -54,7 +68,7 @@ C.Geo.Feature.Feature.prototype.makeDirty = function () {
 };
 
 C.Geo.Feature.Feature.prototype.__click = function (evt, data) {
-    this.emit('click', evt, data);
+    this.emit('click', this, evt, data);
 };
 
 C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {
