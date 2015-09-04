@@ -79,7 +79,6 @@ C.Geo.Feature.Feature.prototype.bindPopup = function (popup) {
 
     this.on('click', function (feature, event) {
 
-        console.log(arguments);
         popup.open(event);
 
     });
