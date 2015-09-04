@@ -34,7 +34,7 @@ C.System.Events.attach = function (citronGIS) {
 
     $(this._citronGIS._renderer.view).mousedown(C.System.Events.stageDown.bind(this));
     $(window).mouseup(C.System.Events.stageUp.bind(this));
-    $(document).mousemove(C.System.Events.stageMove.bind(this));
+    $(this._citronGIS._renderer.view).mousemove(C.System.Events.stageMove.bind(this));
 
     this._citronGIS._renderer.view.addEventListener('touchstart', C.System.Events.stageDown.bind(this));
     document.addEventListener('touchmove',C.System.Events.stageMove.bind(this));
