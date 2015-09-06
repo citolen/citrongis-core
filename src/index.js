@@ -13,6 +13,7 @@ C.Helpers.CoordinatesHelper = {};
 C.Helpers.IntersectionHelper = {};
 C.Helpers.ProjectionsHelper = {};
 C.Helpers.ResolutionHelper = {};
+C.Helpers.RendererHelper = {};
 C.Layer = {};
 C.Layer.Tile = {};
 C.Layer.Tile.Schema = {};

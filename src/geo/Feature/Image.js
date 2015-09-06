@@ -57,76 +57,20 @@ C.Geo.Feature.Image.prototype.location = function (location) {
     return this._location;
 };
 
-//TODO remove PIXI dependency
 C.Geo.Feature.Image.prototype.load = function () {
     if (!this._source) {
         return;
     }
 
-    var self = this;
-
-    this._loader = new PIXI.loaders.Loader().add('image', this._source, {
-        loadType: 2
-    });
-
-    this._loader.once('complete', function (loader, resources) {
-
-        self.__texture = resources.image.texture;
-
-        self.emit('loaded', self);
-        self._mask |= C.Geo.Feature.Image.MaskIndex.SOURCE;
-        self.emit('sourceChanged', self._source);
-        self.makeDirty();
-
-    });
-
-    this._loader.once('error', function () {
-        self.emit('error', self);
-    });
-
-    this._loader.load();
-
-//    this._loader = new PIXI.ImageLoader(this._source);
-//    var self = this;
-//    this._loader.on('loaded', function () {
-//        self.__texture = self._loader.texture;
-//        self.emit('loaded', self);
-//        self._mask |= C.Geo.Feature.Image.MaskIndex.SOURCE;
-//        self.emit('sourceChanged', self._source);
-//        self.makeDirty();
-//    });
-//    this._loader.on('error', function () {
-//        self.emit('error', self);
-//    });
-//    this._loader.load();
+    C.Helpers.RendererHelper.Image.load(this);
 };
 
-//TODO remove PIXI dependency
 C.Geo.Feature.Image.prototype.crop = function (crop) {
-    var img = new C.Geo.Feature.Image({
-        location: this._location,
-        width: this._width,
-        height: this._height,
-        anchorX: this._anchorX,
-        anchorY: this._anchorY
-    });
-
-    img.__texture = new PIXI.Texture(this.__texture, crop);
-    return (img);
+    return C.Helpers.RendererHelper.Image.crop(this, crop);
 };
 
-//TODO remove PIXI dependency
 C.Geo.Feature.Image.prototype.copy = function () {
-    var img = new C.Geo.Feature.Image({
-        location: this._location,
-        width: this._width,
-        height: this._height,
-        anchorX: this._anchorX,
-        anchorY: this._anchorY
-    });
-
-    img.__texture = new PIXI.Texture(this.__texture);
-    return (img);
+    return C.Helpers.RendererHelper.Image.copy(this);
 };
 
 C.Geo.Feature.Image.prototype.source = function (source) {

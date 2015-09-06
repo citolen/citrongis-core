@@ -4,7 +4,6 @@
 
 'use strict';
 
-//TODO be able to add metadata
 C.Geo.Feature.Feature = C.Utils.Inherit(function (base, type, options) {
     base();
 
