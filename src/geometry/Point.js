@@ -19,6 +19,10 @@ C.Geometry.Point.prototype.toString = function () {
     return ("{ x: " + this.X + ", y: " + this.Y + ", z: " + this.Z + ", CRS: " + (this.CRS.name || this.CRS.title || this.CRS) + "}");
 };
 
+C.Geometry.Point.prototype.copy = function () {
+    return new C.Geometry.Point(this.X, this.Y, this.Z, this.CRS);
+};
+
 C.Geometry.Point.prototype.TransformTo = function (to) {
     var tmp = C.Helpers.CoordinatesHelper.TransformTo(this, to);
     this.X = tmp.X;

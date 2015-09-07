@@ -46,7 +46,7 @@ C.Geo.Feature.Image.MaskIndex = {
 };
 
 C.Geo.Feature.Image.prototype.location = function (location) {
-    if (location === undefined || this._location === location) {
+    if (location === undefined) {
         return this._location;
     }
 

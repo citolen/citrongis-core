@@ -24,7 +24,7 @@ C.Geo.Feature.Circle = C.Utils.Inherit(function (base, options) {
 }, C.Geo.Feature.Feature, 'C.Geo.Feature.Circle');
 
 C.Geo.Feature.Circle.prototype.location = function (location) {
-    if (location === undefined || location instanceof C.Geometry.Point === false || this._location === location) {
+    if (location === undefined || location instanceof C.Geometry.Point === false) {
         return this._location;
     }
 
