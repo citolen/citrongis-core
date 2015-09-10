@@ -27,7 +27,9 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
     this._cache = new LRUCache({
         max: 200,
         dispose: function (k, v) {
-            v.feature.__graphics.texture.baseTexture.destroy();
+            if (v.feature.__graphics) {
+                v.feature.__graphics.texture.baseTexture.destroy();
+            }
         }
     });
 
@@ -40,16 +42,22 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
     // Init point, layer has been added
     this.on('added', this.init.bind(this));
     this.on('removed', this.destroy.bind(this));
+
+    this._addedTiles = this.addedTile.bind(this);
+    this._removedTiles = this.removedTile.bind(this);
+    this._resolutionChange = this.resolutionChange.bind(this);
+    this._rotationChange = this.rotationChange.bind(this);
+
 }, C.Geo.Layer, 'C.Layer.Tile.TileLayer');
 
 C.Layer.Tile.TileLayer.prototype.init = function () {
     // Schema events
-    this._schema.on('addedTiles', this.addedTile.bind(this));
-    this._schema.on('removedTiles', this.removedTile.bind(this));
+    this._schema.on('addedTiles', this._addedTiles);
+    this._schema.on('removedTiles', this._removedTiles);
 
     // Viewport Events
-    C.Helpers.viewport.on('resolutionChange', this.resolutionChange.bind(this));
-    C.Helpers.viewport.on('rotationChange', this.rotationChange.bind(this));
+    C.Helpers.viewport.on('resolutionChange', this._resolutionChange);
+    C.Helpers.viewport.on('rotationChange', this._rotationChange);
 
     this._schema.register();
     this.addedTile.call(this, this._schema.getCurrentTiles(), C.Helpers.viewport);
@@ -57,12 +65,12 @@ C.Layer.Tile.TileLayer.prototype.init = function () {
 
 C.Layer.Tile.TileLayer.prototype.destroy = function () {
     // Schema events
-    this._schema.off('addedTiles', this.addedTile.bind(this));
-    this._schema.off('removedTiles', this.removedTile.bind(this));
+    this._schema.off('addedTiles', this._addedTiles);
+    this._schema.off('removedTiles', this._removedTiles);
 
     // Viewport Events
-    C.Helpers.viewport.off('resolutionChange', this.resolutionChange.bind(this));
-    C.Helpers.viewport.off('rotationChange', this.rotationChange.bind(this));
+    C.Helpers.viewport.off('resolutionChange', this._resolutionChange);
+    C.Helpers.viewport.off('rotationChange', this._rotationChange);
 
     this._schema.unregister();
 

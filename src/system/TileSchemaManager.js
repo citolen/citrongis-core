@@ -61,7 +61,6 @@ C.System.TileSchemaManager.prototype.update = function (viewport) {
         if (sch.registered <= 0) continue;
 
         sch.schema.computeTiles(viewport);
-
     }
 };
 
