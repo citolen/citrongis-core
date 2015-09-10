@@ -47,6 +47,13 @@ C.System.Viewport.ActionMask = {
     RESIZE: 8
 };
 
+C.System.Viewport.prototype.setCenter = function (center, noEvent) {
+    this._origin.X = center.X;
+    this._origin.Y = center.Y;
+    this._mask |= C.System.Viewport.ActionMask.TRANSLATE;
+    this._update(noEvent);
+};
+
 C.System.Viewport.prototype.translate = function (tx, ty, noEvent) {
     this._schema.translate(this, tx, ty);
     this._mask |= C.System.Viewport.ActionMask.TRANSLATE;

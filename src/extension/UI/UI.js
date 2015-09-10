@@ -32,7 +32,13 @@ C.Extension.UI.UI.prototype.display = function (path) {
 
     var result = new EJS({text: page}).render(this._context.module.global, {}, citrongisCtx);
 
-    var handler = $.parseHTML(result)[1];
+    var nodes = $.parseHTML(result, document, true);
+    var handler;
+    for (var i = 0; i < nodes.length; ++i) {
+        if (nodes[i].nodeName != '#text') {
+            handler = nodes[i];
+        }
+    }
     handler.classList.add('citrongisextension-handler');
     this.current = handler;
     this.emit('display', handler);
