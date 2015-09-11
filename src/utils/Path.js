@@ -46,3 +46,15 @@ C.Utils.Path.normalize = function (path) {
 
     return (scheme ? scheme + SCHEME : '') + (prependSlash ? SLASH : BLANK) + result;
 };
+
+C.Utils.Path.getType = function (path) {
+
+    if (path.indexOf('http') != -1) {
+        return 0;
+    }
+    return 1;
+};
+
+C.Utils.Path.getExtension = function (path) {
+    return path.split('.').pop();
+};
