@@ -4,7 +4,7 @@
 
 'use strict';
 
-C.Extension.UI.Include = function (filepath) {
+C.Extension.UI.Include = function (filepath, callback) {
 
     var file_extension = filepath.lastIndexOf('.');
 
@@ -17,15 +17,24 @@ C.Extension.UI.Include = function (filepath) {
     if (file_extension == 'js') {
         //TODO add debug
         //console.log('[JS include]', filepath);
-        C.Extension.Require.call(this, filepath);
+        C.Extension.Require.call(this, filepath, function (err) {
+            callback(err);
+        });
     }
     if (file_extension == 'css') {
         //TODO add debug
         //console.log('[CSS include]', filepath);
         //TODO make an upper function to deal with import of css
-        var s = document.createElement('style');
-        s.innerHTML = C.Extension.Require.call(this, filepath);
 
-        document.getElementsByTagName('head')[0].appendChild(s);
+        C.Extension.Require.call(this, filepath, function (err, data) {
+            if (err) {
+                return callback(true);
+            }
+            var s = document.createElement('style');
+            s.innerHTML = data;
+            document.getElementsByTagName('head')[0].appendChild(s);
+            callback();
+        });
+
     }
 };
