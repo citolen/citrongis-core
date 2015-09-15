@@ -20,6 +20,17 @@ C.Geo.Feature.Line = C.Utils.Inherit(function (base, options) {
 
 }, C.Geo.Feature.Feature, 'C.Geo.Feature.Line');
 
+/*
+ *  Constructor
+ */
+C.Geo.Feature.Line_ctr = function (args) {
+    return C.Geo.Feature.Line.apply(this, args);
+};
+C.Geo.Feature.Line_ctr.prototype = C.Geo.Feature.Line.prototype;
+C.Geo.Feature.Line_new_ctr = function () {
+    return new C.Geo.Feature.Line_ctr(arguments);
+};
+
 C.Geo.Feature.Line.prototype.locations = function (locations) {
     if (locations === undefined || typeof locations !== 'Array') {
         return this._locations;

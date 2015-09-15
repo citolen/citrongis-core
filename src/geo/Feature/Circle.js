@@ -23,6 +23,17 @@ C.Geo.Feature.Circle = C.Utils.Inherit(function (base, options) {
 
 }, C.Geo.Feature.Feature, 'C.Geo.Feature.Circle');
 
+/*
+ *  Constructor
+ */
+C.Geo.Feature.Circle_ctr = function (args) {
+    return C.Geo.Feature.Circle.apply(this, args);
+};
+C.Geo.Feature.Circle_ctr.prototype = C.Geo.Feature.Circle.prototype;
+C.Geo.Feature.Circle_new_ctr = function () {
+    return new C.Geo.Feature.Circle_ctr(arguments);
+};
+
 C.Geo.Feature.Circle.prototype.location = function (location) {
     if (location === undefined || location instanceof C.Geometry.Point === false) {
         return this._location;

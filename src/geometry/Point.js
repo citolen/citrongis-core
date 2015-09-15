@@ -15,6 +15,17 @@ C.Geometry.Point = function (x, y, z, crs) {
     this.CRS = C.Helpers.CoordinatesHelper._checkProj(crs);
 };
 
+/*
+ *  Constructor
+ */
+C.Geometry.Point_ctr = function (args) {
+    return C.Geometry.Point.apply(this, args);
+};
+C.Geometry.Point_ctr.prototype = C.Geometry.Point.prototype;
+C.Geometry.Point_new_ctr = function () {
+    return new C.Geometry.Point_ctr(arguments);
+};
+
 C.Geometry.Point.prototype.toString = function () {
     return ("{ x: " + this.X + ", y: " + this.Y + ", z: " + this.Z + ", CRS: " + (this.CRS.name || this.CRS.title || this.CRS) + "}");
 };

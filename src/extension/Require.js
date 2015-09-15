@@ -5,9 +5,21 @@
 'use strict';
 
 function handleJavascript (context, handle, callback) {
-    eval('(function (E, require) {\
+
+    var api = C.Extension.API(context);
+    var argnames = '';
+    var args = [];
+    for (var api_key in api) {
+        argnames += api_key + ',';
+        args.push(api[api_key]);
+    }
+    argnames = argnames.substr(0, argnames.length-1);
+
+    //context._module, C.Extension.Require.bind(context)
+
+    eval('(function (' + argnames + ') {\
 ' + handle.asText() + '\
-}).call(context._module.global, context._module, C.Extension.Require.bind(context));');
+}).apply(context._module.global, args);');
     callback(null);
 };
 

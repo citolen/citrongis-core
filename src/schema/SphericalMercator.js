@@ -34,18 +34,18 @@ C.Schema.SphericalMercator.prototype.translate = function (viewport, tx, ty) {
     viewport._origin.X -= mx;
     viewport._origin.Y += my;
 
-    if (viewport._origin.X < this._extent._minX) {
-        viewport._origin.X = this._extent._minX;
-    }
-    if (viewport._origin.X > this._extent._maxX) {
-        viewport._origin.X = this._extent._maxX;
-    }
-    if (viewport._origin.Y < this._extent._minY) {
-        viewport._origin.Y = this._extent._minY;
-    }
-    if (viewport._origin.Y > this._extent._maxY) {
-        viewport._origin.Y = this._extent._maxY;
-    }
+//    if (viewport._origin.X < this._extent._minX) {
+//        viewport._origin.X = this._extent._minX;
+//    }
+//    if (viewport._origin.X > this._extent._maxX) {
+//        viewport._origin.X = this._extent._maxX;
+//    }
+//    if (viewport._origin.Y < this._extent._minY) {
+//        viewport._origin.Y = this._extent._minY;
+//    }
+//    if (viewport._origin.Y > this._extent._maxY) {
+//        viewport._origin.Y = this._extent._maxY;
+//    }
 
 };
 

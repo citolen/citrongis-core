@@ -38,6 +38,12 @@ C.Geo.Feature.Feature.FeatureType = {
     POLYGON: 3
 };
 
+C.Geo.Feature.Feature.prototype.addTo = function (container) {
+    if (container instanceof C.Geo.Layer) {
+        return container.addFeature(this);
+    }
+};
+
 C.Geo.Feature.Feature.prototype.set = function (key, value) {
     this._metadata[key] = value;
     return value;

@@ -22,6 +22,17 @@ C.Geo.Feature.Polygon = C.Utils.Inherit(function (base, options) {
 
 }, C.Geo.Feature.Feature, 'C.Geo.Feature.Polygon');
 
+/*
+ *  Constructor
+ */
+C.Geo.Feature.Polygon_ctr = function (args) {
+    return C.Geo.Feature.Polygon.apply(this, args);
+};
+C.Geo.Feature.Polygon_ctr.prototype = C.Geo.Feature.Polygon.prototype;
+C.Geo.Feature.Polygon_new_ctr = function () {
+    return new C.Geo.Feature.Polygon_ctr(arguments);
+};
+
 C.Geo.Feature.Polygon.prototype.locations = function (locations) {
     if (locations == undefined || this._locations === locations) {
         return this._locations;

@@ -5,11 +5,9 @@
 'use strict';
 
 C.Geo.Layer = C.Utils.Inherit(function (base, options) {
-    if (options === undefined) {
-        throw 'Invalid Argument';
-    }
-
     base();
+
+    options = options || {};
 
     /* Displayed name, if none not displayed */
     this._name = options.name;
@@ -47,6 +45,17 @@ C.Geo.Layer = C.Utils.Inherit(function (base, options) {
 
 }, EventEmitter, 'C.Geo.Layer');
 
+/*
+ *  Constructor
+ */
+C.Geo.Layer_ctr = function (args) {
+    return C.Geo.Layer.apply(this, args);
+};
+C.Geo.Layer_ctr.prototype = C.Geo.Layer.prototype;
+C.Geo.Layer_new_ctr = function () {
+    return new C.Geo.Layer_ctr(arguments);
+};
+
 C.Geo.Layer.Mask = {
     OPACITY: 1
 };
@@ -64,6 +73,12 @@ C.Geo.Layer.prototype.__added = function () {
 
 C.Geo.Layer.prototype.__removed = function () {
     this.emit('removed', this);
+};
+
+C.Geo.Layer.prototype.addTo = function (container) {
+    if (container instanceof C.Extension.LayerGroup) {
+        return container.addLayer(this);
+    }
 };
 
 C.Geo.Layer.prototype.addFeature = function (feature) {

@@ -24,6 +24,17 @@ C.Extension.LayerGroup = C.Utils.Inherit(function (base, options) {
 
 }, EventEmitter, 'C.Extension.LayerGroup');
 
+/*
+ *  Constructor
+ */
+C.Extension.LayerGroup_ctr = function (args) {
+    return C.Extension.LayerGroup.apply(this, args);
+};
+C.Extension.LayerGroup_ctr.prototype = C.Extension.LayerGroup.prototype;
+C.Extension.LayerGroup_new_ctr = function () {
+    return new C.Extension.LayerGroup_ctr(arguments);
+};
+
 C.Extension.LayerGroup.EventType = {
     ADDED: 0,
     REMOVED: 1,

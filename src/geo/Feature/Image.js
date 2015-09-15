@@ -29,6 +29,17 @@ C.Geo.Feature.Image = C.Utils.Inherit(function (base, options) {
 
 }, C.Geo.Feature.Feature, 'C.Geo.Feature.Image');
 
+/*
+ *  Constructor
+ */
+C.Geo.Feature.Image_ctr = function (args) {
+    return C.Geo.Feature.Image.apply(this, args);
+};
+C.Geo.Feature.Image_ctr.prototype = C.Geo.Feature.Image.prototype;
+C.Geo.Feature.Image_new_ctr = function () {
+    return new C.Geo.Feature.Image_ctr(arguments);
+};
+
 C.Geo.Feature.Image.ScaleMode = {
     DEFAULT: 0,
     NEAREST: 1
