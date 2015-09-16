@@ -11,9 +11,11 @@ C.Extension.Extension = function (handler, layerManager, callback) {
 
     var self = this;
 
-    this._resources = new C.Extension.ExtensionResources(handler, function (err) {
+    this._resources = new C.Extension.ExtensionResources(handler, function (err, resources) {
 
         if (err) { return callback(err); }
+
+        self._resources = resources;
 
         self._resources.file(C.Extension.AR_STRINGS_LOCALIZATION, function (err, strings_handle) {
             var localization = {};

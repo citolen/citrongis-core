@@ -6,9 +6,10 @@
 
 C.Extension.ExtensionResources = function (handler, callback) {
     this._handler = handler;
+    var self = this;
     this.checkHandler(function (err) {
-        if (err) { return callback(true); }
-        return callback(null);
+        if (err) { return callback(true, self); }
+        return callback(null, self);
     });
 };
 
