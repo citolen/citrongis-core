@@ -31,7 +31,9 @@ C.Extension.API = function (context) {
         },
         E: {
             Display: context._module.ui.display.bind(context._module.ui),
-            Select: context._module.ui.select.bind(context._module.ui)
+            Select: context._module.ui.select.bind(context._module.ui),
+            '$': context._module.ui.select.bind(context._module.ui),
+            Strings: context._module.strings
         }
     };
 };

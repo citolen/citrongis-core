@@ -82,12 +82,16 @@ C.Extension.UI.UI.prototype.display = function (path, nowindow) {
             }
 
             if (nowindow) {
-                var container = document.createElement('div');
+                self._container = document.createElement('div');
                 var nodes = $.parseHTML(output, document, true);
                 for (var i = 0; i < nodes.length; ++i) {
-                    $(container).append(nodes[i]);
+                    $(self._container).append(nodes[i]);
                 }
-                self.emit('display', container, nowindow);
+                for (var i = 0; i < self._classList.length; ++i) {
+                    self._container.classList.add(self._classList[i]);
+                }
+                self._selector = $(self._container);
+                self.emit('display', self._container, nowindow);
             } else {
                 var nodes = $.parseHTML(output, document, true);
                 for (var i = 0; i < nodes.length; ++i) {
