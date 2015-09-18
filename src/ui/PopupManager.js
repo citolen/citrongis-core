@@ -36,10 +36,8 @@ C.UI.PopupManager.update = function () {
 };
 
 C.UI.PopupManager.updatePopup = function (popup, event) {
-    console.log(popup);
     if (!popup.location) {
         if (event) {
-            console.log(event.offsetX, event.offsetY);
             popup.location = C.Helpers.viewport.screenToWorld(event.offsetX, event.offsetY);
         } else { return; }
     }
@@ -48,8 +46,6 @@ C.UI.PopupManager.updatePopup = function (popup, event) {
 
     var w = popup.dom.offsetWidth;
     var h = popup.dom.offsetHeight;
-    console.log(w, h);
-    console.log(screenPosition);
 
     var x = screenPosition.X - (w / 2);
     var y = screenPosition.Y - h /*- popup.feature._radius*/ + 3;

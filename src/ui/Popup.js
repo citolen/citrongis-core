@@ -40,6 +40,17 @@ C.UI.Popup = function (feature, options) {
     }
 };
 
+/*
+ *  Constructor
+ */
+C.UI.Popup_ctr = function (args) {
+    return C.UI.Popup.apply(this, args);
+};
+C.UI.Popup_ctr.prototype = C.UI.Popup.prototype;
+C.UI.Popup_new_ctr = function () {
+    return new C.UI.Popup_ctr(arguments);
+};
+
 C.UI.Popup.prototype.open = function (event) {
 
     event = event.data.originalEvent;

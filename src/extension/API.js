@@ -18,6 +18,8 @@ C.Extension.API = function (context) {
             Layer: C.Geo.Layer_new_ctr,
             LayerGroup: C.Helpers.layermanager.createGroup.bind(C.Helpers.layermanager, context),
 
+            Popup: C.UI.Popup_new_ctr,
+
             /*
              *  Geometry
             */
