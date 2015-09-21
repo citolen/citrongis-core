@@ -10,7 +10,7 @@ C.Extension.API = function (context) {
              *  Features
              */
             Circle: C.Geo.Feature.Circle_new_ctr,
-            Image: C.Geo.Feature.Image_new_ctr,
+            Image: C.Geo.Feature.Image_new_ctr.bind(context),
             ImageScaleMode: C.Geo.Feature.Image.ScaleMode,
             Line: C.Geo.Feature.Line_new_ctr,
             Polygon: C.Geo.Feature.Polygon_new_ctr,

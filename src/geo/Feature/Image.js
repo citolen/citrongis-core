@@ -37,7 +37,9 @@ C.Geo.Feature.Image_ctr = function (args) {
 };
 C.Geo.Feature.Image_ctr.prototype = C.Geo.Feature.Image.prototype;
 C.Geo.Feature.Image_new_ctr = function () {
-    return new C.Geo.Feature.Image_ctr(arguments);
+    var obj = new C.Geo.Feature.Image_ctr(arguments)
+    obj._context = this
+    return obj
 };
 
 C.Geo.Feature.Image.ScaleMode = {

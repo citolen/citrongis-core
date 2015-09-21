@@ -34,21 +34,30 @@ var fileHandle = function (url, callback) {
 
     this._url = url;
     this._content = null;
+    this._decoder = new TextDecoder();
 
     var self = this;
-    $.get(this._url, function (data, status) {
-        if (status != "success") {
-            return callback(true);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', this._url, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = function(e) {
+        if (this.status == 200) {
+            self._content = new Uint8Array(xhr.response);
+            callback();
+        } else {
+            callback(true);
         }
-        self._content = data;
-        callback(null);
-    }, "text").fail(function () {
-        callback(null);
-    });
+    };
+
+    xhr.send();
+};
+
+fileHandle.prototype.asUint8Array = function () {
+    return this._content;
 };
 
 fileHandle.prototype.asText = function () {
-
-    return this._content;
-
+    return this._decoder.decode(this._content)
 };
