@@ -28,3 +28,5 @@ C.Utils.Context = {};
 C.Utils.Intersection = {};
 C.Utils.Object = {};
 C.Utils.Path = {};
+
+Long = dcodeIO.Long;
