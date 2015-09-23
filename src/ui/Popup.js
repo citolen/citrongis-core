@@ -48,7 +48,9 @@ C.UI.Popup_ctr = function (args) {
 };
 C.UI.Popup_ctr.prototype = C.UI.Popup.prototype;
 C.UI.Popup_new_ctr = function () {
-    return new C.UI.Popup_ctr(arguments);
+    var obj = new C.UI.Popup_ctr(arguments);
+    obj._context = this
+    return obj
 };
 
 C.UI.Popup.prototype.open = function (event) {

@@ -214,7 +214,7 @@ C.Layer.Tile.TileLayer.prototype.tileLoaded = function (key, noanim) {
         o.feature.opacity(opacity);
 
         if (opacity < 1)
-            o.opacity_animation = setTimeout(f, 30);
+            o.opacity_animation = setTimeout(f, 25);
         else {
             o.feature.opacity(1);
             delete o.opacity_animation;

@@ -18,7 +18,7 @@ C.Extension.API = function (context) {
             Layer: C.Geo.Layer_new_ctr,
             LayerGroup: C.Helpers.layermanager.createGroup.bind(C.Helpers.layermanager, context),
 
-            Popup: C.UI.Popup_new_ctr,
+            Popup: C.UI.Popup_new_ctr.bind(context),
 
             /*
              *  Geometry
@@ -36,6 +36,7 @@ C.Extension.API = function (context) {
             Select: context._module.ui.select.bind(context._module.ui),
             '$': context._module.ui.select.bind(context._module.ui),
             Strings: context._module.strings
-        }
+        },
+        window: context._module.global
     };
 };
