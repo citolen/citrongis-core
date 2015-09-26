@@ -78,14 +78,10 @@ C.Layer.Tile.TileSchema.prototype.fitToBounds = function (point, bound, floor) {
         point._x = Math.floor(point._x);
         point._y = Math.floor(point._y);
     }
-    if (point._x < 0)
-        point._x = 0;
-    if (point._y < 0)
-        point._y = 0;
-    if (point._x > bound)
-        point._x = bound;
-    if (point._y > bound)
-        point._y = bound;
+    if (point._x < 0) { point._x = 0; }
+    if (point._y < 0) { point._y = 0; }
+    if (point._x > bound) { point._x = bound; }
+    if (point._y > bound) { point._y = bound; }
 };
 
 C.Layer.Tile.TileSchema.prototype._mergeTiles = function () {
@@ -107,10 +103,11 @@ C.Layer.Tile.TileSchema.prototype.getCurrentTiles = function () {
 };
 
 C.Layer.Tile.TileSchema.prototype.isTileInView = function (tileIndex) {
-    if (tileIndex._BId in this._unchangedTiles)
+    if (tileIndex._BId in this._unchangedTiles ||
+        tileIndex._BId in this._addedTiles)
+    {
         return (true);
-    if (tileIndex._BId in this._addedTiles)
-        return (true);
+    }
     return (false);
 };
 
@@ -120,18 +117,18 @@ C.Layer.Tile.TileSchema.prototype.tileToPoly = function (tile, resolution, size,
     var x = Math.floor(tile._x);
     var y = Math.floor(tile._y);
 
-    var tcenter = this.tileToWorld(new C.Layer.Tile.TileIndex(x + 0.5, y + 0.5, tile._z, tile._BId), resolution, size);
+    var tcenter = this.tileToWorld(new C.Layer.Tile.TileIndex(x + 0.5,
+                                                              y + 0.5,
+                                                              tile._z,
+                                                              tile._BId),
+                                   resolution,
+                                   size);
     var half = (size / 2) * resolution;
-    var topLeft = new C.Geometry.Vector2(tcenter.X - half, tcenter.Y + half);
-    var topRight = new C.Geometry.Vector2(tcenter.X + half, tcenter.Y + half);
-    var bottomLeft = new C.Geometry.Vector2(tcenter.X - half, tcenter.Y - half);
-    var bottomRight = new C.Geometry.Vector2(tcenter.X + half, tcenter.Y - half);
-
     return ([
-        [topLeft.X, topLeft.Y],
-        [topRight.X, topRight.Y],
-        [bottomRight.X, bottomRight.Y],
-        [bottomLeft.X, bottomLeft.Y]
+        [tcenter.X - half, tcenter.Y + half],
+        [tcenter.X + half, tcenter.Y + half],
+        [tcenter.X - half, tcenter.Y - half],
+        [tcenter.X + half, tcenter.Y - half]
     ]);
 };
 
@@ -227,24 +224,20 @@ C.Layer.Tile.TileSchema.prototype.computeTiles = function (viewport) {
 
         var topLeft = this.worldToTile(viewport._bbox._topLeft, viewport._resolution, size);
         var topRight = this.worldToTile(viewport._bbox._topRight, viewport._resolution, size);
-        var bottomRight = this.worldToTile(viewport._bbox._bottomRight, viewport._resolution, size);
         var bottomLeft = this.worldToTile(viewport._bbox._bottomLeft, viewport._resolution, size);
 
         var bound = this._bounds[zoom];
 
         this.fitToBounds(topLeft, bound, true);
         this.fitToBounds(topRight, bound);
-        this.fitToBounds(bottomRight, bound);
         this.fitToBounds(bottomLeft, bound);
-
-
 
         var tiles = {};
 
         this._mergeTiles();
         var addedTilesCount = 0;
-        this._addedTiles = {};  // reset added tiles
         var removedTilesCount = 0;
+        this._addedTiles = {};  // reset added tiles
         this._removedTiles = {}; // reset removed tiles
 
         for (var y = topLeft._y; y < bottomLeft._y; ++y) {

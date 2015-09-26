@@ -32,24 +32,27 @@ C.Layer.Tile.Schema.SphericalMercator = C.Utils.Inherit(function (base) {
 C.Layer.Tile.Schema.SphericalMercator.prototype.tileToWorld = function (tileIndex, resolution, size, anchor) {
     size = size || this._tileWidth;
     anchor = anchor || 0;
-    var worldX = this._extent._minX + (tileIndex._x + anchor) * size * resolution;
-    var worldY = (tileIndex._y + anchor) * size * resolution;
-    if (this.yAxis == C.Layer.Tile.yAxis.NORMAL)
+    var sizeInMeter = size * resolution;
+    var worldX = this._extent._minX + (tileIndex._x + anchor) * sizeInMeter;
+    var worldY = (tileIndex._y + anchor) * sizeInMeter
+    if (this.yAxis == C.Layer.Tile.yAxis.NORMAL) {
         worldY = this._extent._minY + worldY;
-    else
+    } else {
         worldY = this._extent._maxY - worldY;
+    }
     return (new C.Geometry.Vector2(worldX, worldY));
 };
 
 C.Layer.Tile.Schema.SphericalMercator.prototype.worldToTile = function (world, resolution, size) {
     size = size || this._tileWidth;
-    var tileX = (world.X - this._extent._minX) / resolution / size;
+    var sizeInPixel = resolution * size;
+    var tileX = (world.X - this._extent._minX) / sizeInPixel;
     var tileY = world.Y;
     if (this._yAxis == C.Layer.Tile.yAxis.NORMAL)
         tileY = tileY - this._extent._minY;
     else
         tileY = this._extent._maxY - tileY;
-    tileY = tileY / resolution / size;
+    tileY = tileY / sizeInPixel;
     var tileZ = this.getZoomLevel(resolution);
     return (C.Layer.Tile.TileIndex.fromXYZ(tileX, tileY, tileZ));
 };
