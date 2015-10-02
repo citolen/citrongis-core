@@ -6,7 +6,7 @@
 
 dust.helpers.include = function (chunk, context, bodies, params) {
     return chunk.map(function (chunk) {
-        var extension_context = context.stack.head._context
+        var extension_context = context.stack.head._context;
         C.Extension.UI.Include.call(extension_context, params.src, function (err) {
             if (err) {
                 console.log('[fail]', params.src, 'unable to load');

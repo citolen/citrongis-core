@@ -22,18 +22,11 @@ C.Extension.UI.Include = function (filepath, callback) {
         file_extension = filepath.substr(file_extension + 1);
     }
 
-    if (file_extension == 'js') {
-        //TODO add debug
-        //console.log('[JS include]', filepath);
-        C.Extension.Require.call(this, filepath, function (err) {
-            callback(err);
-        });
-    }
     if (file_extension == 'css') {
         //TODO add debug
         //console.log('[CSS include]', filepath);
 
-        C.Extension.Require.call(this, filepath, function (err, data) {
+        return C.Extension.Require.call(this, filepath, function (err, data) {
             if (err) {
                 return callback(true);
             }
@@ -48,6 +41,12 @@ C.Extension.UI.Include = function (filepath, callback) {
                 callback();
             });
         });
-
     }
+    //    if (file_extension == 'js') {
+    //TODO add debug
+    //console.log('[JS include]', filepath);
+    C.Extension.Require.call(this, filepath, function (err) {
+        callback(err);
+    });
+    //    }
 };

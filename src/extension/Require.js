@@ -48,6 +48,23 @@ C.Extension.Require = function (path, callback) {
     var pathType = C.Utils.Path.getType(path);
     switch (pathType) {
         case 0: //web
+
+            $.get(path, function (err) {
+                //TODO handle other type
+            }, "text").fail(function () {
+                //TODO find a best way
+                var oldWrite = document.write;
+                document.write = function () {
+                    var body = $(document.body);
+                    body.append.apply(body, arguments);
+                };
+
+                $.getScript(path, function (err) {
+                    document.write = oldWrite;
+                    callback(err);
+                });
+            });
+
             break;
         case 1: //relative to app
 

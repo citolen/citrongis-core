@@ -34,7 +34,7 @@ C.Geo.Feature.Polygon_new_ctr = function () {
 };
 
 C.Geo.Feature.Polygon.prototype.locations = function (locations) {
-    if (locations == undefined || this._locations === locations) {
+    if (locations == undefined || locations.constructor != Array) {
         return this._locations;
     }
 

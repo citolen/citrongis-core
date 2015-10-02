@@ -177,7 +177,7 @@ C.Layer.Tile.TileLayer.prototype.resolutionChange = function () {
         obj.feature.height(rsize);
         var location = this._schema.tileToWorld(obj.tile, C.Helpers.viewport._resolution, rsize, this._anchor);
         obj.feature.location(new C.Geometry.Point(location.X, location.Y, 0, C.Helpers.schema._crs));
-        if (C.Utils.Comparison.Equals(rsize, 256) && C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0))
+        if (C.Utils.Comparison.Equals(rsize, this._schema._tileWidth) && C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0))
             obj.feature.scaleMode(C.Geo.Feature.Image.ScaleMode.NEAREST);
         else
             obj.feature.scaleMode(C.Geo.Feature.Image.ScaleMode.DEFAULT);

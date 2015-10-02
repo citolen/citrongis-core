@@ -32,7 +32,7 @@ C.Geo.Feature.Line_new_ctr = function () {
 };
 
 C.Geo.Feature.Line.prototype.locations = function (locations) {
-    if (locations === undefined || typeof locations !== 'Array') {
+    if (locations === undefined || locations.constructor !== Array) {
         return this._locations;
     }
 
