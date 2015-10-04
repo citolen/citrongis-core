@@ -41,6 +41,10 @@ C.Extension.LayerGroup.EventType = {
     MOVED: 2
 };
 
+C.Extension.LayerGroup.prototype.count = function () {
+    return this._layers.length;
+};
+
 C.Extension.LayerGroup.prototype.layers = function () {
     var result = [];
     for (var i = 0; i < this._layers.length; ++i) {

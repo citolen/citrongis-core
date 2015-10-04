@@ -20,7 +20,7 @@ function handleJavascript (context, handle, callback) {
     eval('(function (' + argnames + ') {\
 ' + handle.asText() + '\
 }).apply(context._module.global, args);');
-    callback(null);
+    callback.call(context._module.global, null, api.module.exports);
 };
 
 function handleDefault (context, handle, callback) {

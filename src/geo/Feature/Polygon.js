@@ -45,6 +45,21 @@ C.Geo.Feature.Polygon.prototype.locations = function (locations) {
     return this._locations;
 };
 
+C.Geo.Feature.Polygon.prototype.locationAt = function (idx, location) {
+    if (idx === undefined) {
+        return (null);
+    }
+    if (idx !== undefined && location === undefined) {
+        return this._locations[idx];
+    }
+
+    this._locations[idx] = location;
+    this._locationChanged = true;
+    this.emit('locationChanged', {idx: idx, location: location});
+    this.makeDirty();
+    return (location);
+};
+
 C.Geo.Feature.Polygon.prototype.fillColor = function (fillColor) {
     if (fillColor == undefined || this._fillColor === fillColor) {
         return this._fillColor;

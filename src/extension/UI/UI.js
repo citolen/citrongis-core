@@ -31,6 +31,8 @@ C.Extension.UI.UI = C.Utils.Inherit(C.Utils.Inherit(function (bridgeConstructor,
 
     this._selector = undefined;
 
+    this._isLoaded = false;
+
 }, EventEmitter, 'C.Extension.UI.UI'), C.Extension.UI.Bridge, 'C.Extension.UI.UI');
 
 C.Extension.UI.UI.prototype.addClass = function (classname) {
@@ -43,6 +45,13 @@ C.Extension.UI.UI.prototype.addClass = function (classname) {
 C.Extension.UI.UI.prototype.select = function (selector) {
     if (this._selector) {
         return this._selector.find(selector);
+    }
+};
+
+C.Extension.UI.UI.prototype._loaded = function () {
+    if (this._context._module.global.onLoaded !== undefined &&
+        typeof this._context._module.global.onLoaded === 'function') {
+        this._context._module.global.onLoaded(this._container);
     }
 };
 
@@ -60,8 +69,6 @@ C.Extension.UI.UI.prototype.display = function (path, nowindow) {
         context.currentPath = path;
         var citrongisCtx = {
             _context: context
-            //            require: C.Extension.Require.bind(context),
-            //            include: C.Extension.UI.Include.bind(context)
         };
 
         C.Utils.Object.merge(citrongisCtx, self._context._module.global);
@@ -100,10 +107,9 @@ C.Extension.UI.UI.prototype.display = function (path, nowindow) {
                 self.emit('display', self._container);
             }
 
-            if (self._context._module.global.onLoaded !== undefined &&
-                typeof self._context._module.global.onLoaded === 'function') {
-                self._context._module.global.onLoaded(self._container);
-            }
+            self._isLoaded = true;
+
+            self._loaded();
         });
     });
 };
