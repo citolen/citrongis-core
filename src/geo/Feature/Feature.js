@@ -32,7 +32,8 @@ C.Geo.Feature.Feature.InteractiveEvents = ['click', 'mousedown', 'mousemove', 'm
 C.Geo.Feature.Feature.EventType = {
     ADDED: 0,
     REMOVED: 1,
-    UPDATED: 2
+    UPDATED: 2,
+    MOVED: 3
 };
 
 C.Geo.Feature.Feature.FeatureType = {

@@ -39,9 +39,9 @@ C.Extension.API = function (context) {
             Select: context._module.ui.select.bind(context._module.ui),
             '$': context._module.ui.select.bind(context._module.ui),
             Strings: context._module.strings,
-            map: C.Helpers.layermanager.createGroup.call(C.Helpers.layermanager, context, {
+            map: /*C.Helpers.layermanager.createGroup.call(C.Helpers.layermanager, context, {
                 name: 'default-group'
-            }),
+            })*/context._module._rootLayer,
             onload: function (callback) {
                 context._module.global.onLoaded = callback;
                 if (context._module.ui._isLoaded) {

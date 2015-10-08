@@ -61,6 +61,8 @@ C.Extension.Extension.prototype.run = function () {
 
         self.setupEnvironment();
 
+        self._module.addLayerToMap();
+
         C.Extension.Require.call(self, start_script);
     });
 };

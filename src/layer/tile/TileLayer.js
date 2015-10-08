@@ -96,7 +96,7 @@ C.Layer.Tile.TileLayer.prototype.destroy = function () {
     this._substitution = {};
 };
 
-C.Layer.Tile.TileLayer.prototype.loadRootTile = function (cb) {
+C.Layer.Tile.TileLayer.prototype.loadRootTile = function () {
     var tile = C.Layer.Tile.TileIndex.fromXYZ(0,0,0);
     var url = this._source.tileIndexToUrl(tile);
     var rsize = this.getTileSize();
@@ -119,12 +119,7 @@ C.Layer.Tile.TileLayer.prototype.loadRootTile = function (cb) {
             feature: feature,
             tile: tile
         });
-        //        cb();
     }).bind(this, tile._BId));
-
-    feature.on('error', function () {
-        //        cb();
-    });
 
     feature.load();
 };
@@ -303,10 +298,6 @@ C.Layer.Tile.TileLayer.prototype.addedTile = function (addedTiles, viewport) {
 
         var item = this._cache.get(key);
 
-        if (!(key in this._substitution)) { // create substitution to cover the missing tile
-            this.createSubstitute(tile, viewport._zoomDirection);
-        }
-
         if (item) { // Tile was already in cache
             this._tileInView[key] = item;
             item.feature.width(rsize);
@@ -315,16 +306,19 @@ C.Layer.Tile.TileLayer.prototype.addedTile = function (addedTiles, viewport) {
             item.feature.scaleMode((C.Utils.Comparison.Equals(viewport._rotation, 0)) ? C.Geo.Feature.Image.ScaleMode.NEAREST : C.Geo.Feature.Image.ScaleMode.DEFAULT);
             var location = this._schema.tileToWorld(item.tile, C.Helpers.viewport._resolution, rsize, this._anchor);
             item.feature.location(new C.Geometry.Point(location.X, location.Y, 0, C.Helpers.schema._crs));
-            item.feature.opacity(0);
+            item.feature.opacity(1);
             this.addFeature(item.feature);
-            this.tileLoaded.call(this, key);
-            //            continue;
+            this.tileLoaded.call(this, key, true);
+            continue;
 
         } else if (!(key in this._loading)) { // Add the tile to the loading queue
             this._loading[key] = true;
             this._queue.push(tile);
         }
 
+        if (!(key in this._substitution)) { // create substitution to cover the missing tile
+            this.createSubstitute(tile, viewport._zoomDirection);
+        }
 
     }
 };
