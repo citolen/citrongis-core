@@ -33,14 +33,16 @@ C.Geo.Feature.Feature.EventType = {
     ADDED: 0,
     REMOVED: 1,
     UPDATED: 2,
-    MOVED: 3
+    MOVED: 3,
+    UPDATEPOSITION: 4
 };
 
 C.Geo.Feature.Feature.FeatureType = {
     CIRCLE: 0,
     IMAGE: 1,
     LINE: 2,
-    POLYGON: 3
+    POLYGON: 3,
+    TEXT: 4
 };
 
 C.Geo.Feature.Feature.prototype.on = function (eventName) {

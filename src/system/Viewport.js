@@ -31,6 +31,8 @@ C.System.Viewport = C.Utils.Inherit(function (base, options) {
 
     this._mask = 0;
 
+    this._lastZoomLevel = this.getZoomLevel();
+
     this._update();
 }, EventEmitter, 'C.System.Viewport');
 
@@ -45,6 +47,34 @@ C.System.Viewport.ActionMask = {
     ROTATE: 2,
     ZOOM: 4,
     RESIZE: 8
+};
+
+C.System.Viewport.prototype.getBounds = function () {
+    var bounds = new C.Geometry.Bounds();
+    bounds._crs = this._schema._crs;
+    bounds.extend(this._bbox._bottomLeft);
+    bounds.extend(this._bbox._bottomRight);
+    bounds.extend(this._bbox._topLeft);
+    bounds.extend(this._bbox._topRight);
+    return bounds;
+};
+
+C.System.Viewport.prototype.getMaxZoomLevel = function () {
+    return this._schema._resolutions.length - 1;
+};
+
+C.System.Viewport.prototype.getZoomLevel = function () {
+    for (var i = 0; i < this._schema._resolutions.length; ++i) {
+        var res = this._schema._resolutions[i];
+        if (this._resolution > res || C.Utils.Comparison.Equals(this._resolution, res)) {
+            return (i);
+        }
+    }
+    return (this._schema._resolutions.length - 1);
+};
+
+C.System.Viewport.prototype.getResolutionAtZoomLevel = function (zoomLevel) {
+    return this._schema._resolutions[zoomLevel];
 };
 
 C.System.Viewport.prototype.setCenter = function (center, noEvent) {
@@ -80,6 +110,11 @@ C.System.Viewport.prototype.zoom = function (resolution, noEvent) {
     this._mask |= C.System.Viewport.ActionMask.ZOOM;
     this._update(noEvent);
     this.emit('resolutionChange', this);
+    var zoomLevel = this.getZoomLevel();
+    if (this._lastZoomLevel != zoomLevel) {
+        this.emit('zoomChanged', this);
+    }
+    this._lastZoomLevel = zoomLevel;
 };
 
 C.System.Viewport.prototype.resize = function (newWidth, newHeight, noEvent) {

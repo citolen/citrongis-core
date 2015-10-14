@@ -23,6 +23,8 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
     // Tile loading
     this._loading = {};
 
+    this._initialized = false;
+
     // Tile cache
     this._cache = new LRUCache({
         max: 200,
@@ -55,16 +57,7 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
  *  init - initialization when added to the map
  */
 C.Layer.Tile.TileLayer.prototype.init = function () {
-    /* BENCHMARK */
-    //
-    //    var ti = C.Layer.Tile.TileIndex.fromXYZ(15, 26, 10);
-    //    var start = Date.now();
-    //    for (var i = 0; i < 1000000; ++i) {
-    //        var r = this._schema.tileToWorld(ti, 305.748113086);
-    //    }
-    //    var end = Date.now();
-    //    console.log('time', end-start, 'ms');
-
+    if (this._initialized) { return; }
     // Schema events
     this._schema.on('addedTiles', this._addedTiles);
     this._schema.on('removedTiles', this._removedTiles);
@@ -75,6 +68,7 @@ C.Layer.Tile.TileLayer.prototype.init = function () {
 
     this._schema.register();
     this.addedTile.call(this, this._schema.getCurrentTiles(), C.Helpers.viewport);
+    this._initialized = true;
 };
 
 /*
@@ -94,6 +88,7 @@ C.Layer.Tile.TileLayer.prototype.destroy = function () {
     this.removedTile(this._tileInView, C.Helpers.viewport);
     this._tileInView = {};
     this._substitution = {};
+    this._initialized = false;
 };
 
 C.Layer.Tile.TileLayer.prototype.loadRootTile = function () {
@@ -112,15 +107,12 @@ C.Layer.Tile.TileLayer.prototype.loadRootTile = function () {
         source: url,
         scaleMode: (C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0)) ? C.Geo.Feature.Image.ScaleMode.NEAREST : C.Geo.Feature.Image.ScaleMode.DEFAULT
     });
-
-    // image was loaded
     feature.on('loaded', (function (key) {
         this._cache.set(key, {
             feature: feature,
             tile: tile
         });
     }).bind(this, tile._BId));
-
     feature.load();
 };
 
@@ -170,12 +162,20 @@ C.Layer.Tile.TileLayer.prototype.resolutionChange = function () {
 
         obj.feature.width(rsize);
         obj.feature.height(rsize);
-        var location = this._schema.tileToWorld(obj.tile, C.Helpers.viewport._resolution, rsize, this._anchor);
-        obj.feature.location(new C.Geometry.Point(location.X, location.Y, 0, C.Helpers.schema._crs));
-        if (C.Utils.Comparison.Equals(rsize, this._schema._tileWidth) && C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0))
+        var location = this._schema.tileToWorld(obj.tile,
+                                                C.Helpers.viewport._resolution,
+                                                rsize,
+                                                this._anchor);
+        obj.feature.location(new C.Geometry.Point(location.X,
+                                                  location.Y,
+                                                  0,
+                                                  C.Helpers.schema._crs));
+        if (C.Utils.Comparison.Equals(rsize, this._schema._tileWidth) &&
+            C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0)) {
             obj.feature.scaleMode(C.Geo.Feature.Image.ScaleMode.NEAREST);
-        else
+        } else {
             obj.feature.scaleMode(C.Geo.Feature.Image.ScaleMode.DEFAULT);
+        }
     }
 
     // update all the substitution tiles
@@ -190,8 +190,14 @@ C.Layer.Tile.TileLayer.prototype.resolutionChange = function () {
             }
             obj.feature.width(trsize);
             obj.feature.height(trsize);
-            var location = this._schema.tileToWorld(obj.tile, C.Helpers.viewport._resolution, trsize, this._anchor);
-            obj.feature.location(new C.Geometry.Point(location.X, location.Y, 0, C.Helpers.schema._crs));
+            var location = this._schema.tileToWorld(obj.tile,
+                                                    C.Helpers.viewport._resolution,
+                                                    trsize,
+                                                    this._anchor);
+            obj.feature.location(new C.Geometry.Point(location.X,
+                                                      location.Y,
+                                                      0,
+                                                      C.Helpers.schema._crs));
         }
     }
 };
@@ -235,7 +241,8 @@ C.Layer.Tile.TileLayer.prototype.loadTile = function (tile, callback) {
 
     // image was loaded
     feature.on('loaded', (function (key) {
-        if (!(key in this._tileInView)) { // not in view anymore, nothing to do, was already handled
+        // not in view anymore, nothing to do, was already handled
+        if (!(key in this._tileInView)) {
             callback(true);
             return;
         }
@@ -351,9 +358,9 @@ C.Layer.Tile.TileLayer.prototype.createSubstitute = function (tile, zoomDirectio
                 else if (child._z < self._schema._resolutions.length && level < 3) {
                     if (explore(child, level + 1) != 4)
                         return 0;
-                    //                    if (explore(child, level + 1) > 0) {
-                    //                        ++cover;
-                    //                    }
+//                                        if (explore(child, level + 1) > 0) {
+//                                            ++cover;
+//                                        }
                 }
             }
             return cover;

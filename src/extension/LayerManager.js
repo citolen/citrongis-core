@@ -25,7 +25,7 @@ C.Extension.LayerManager.prototype.addLayer = function (layer) {
         return false;
     }
 
-    layer._parent = null;
+    layer._parent = 42;
     this._layers.push(layer);
 
     layer.on('dirty', this._layerDirty);

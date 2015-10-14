@@ -92,3 +92,11 @@ C.Geo.Feature.Polygon.prototype.outlineWidth = function (outlineWidth) {
     this.makeDirty();
     return this._outlineWidth;
 };
+
+C.Geo.Feature.Polygon.prototype.getBounds = function () {
+    var bounds = new C.Geometry.Bounds();
+    for (var i = 0; i < this._locations.length; ++i) {
+        bounds.extend(this._locations[i]);
+    }
+    return bounds;
+};

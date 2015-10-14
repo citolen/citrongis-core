@@ -78,3 +78,11 @@ C.Geo.Feature.Line.prototype.lineColor = function (lineColor) {
     this.makeDirty();
     return this._lineColor;
 };
+
+C.Geo.Feature.Line.prototype.getBounds = function () {
+    var bounds = new C.Geometry.Bounds();
+    for (var i = 0; i < this._locations.length; ++i) {
+        bounds.extend(this._locations[i]);
+    }
+    return bounds;
+};

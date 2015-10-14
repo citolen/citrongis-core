@@ -16,9 +16,12 @@ C.Geo.Layer = C.Utils.Inherit(function (base, options) {
     this._layerDirty =          LayerDirty.bind(this);
     this._layerFeatureChange =  LayerFeatureChange.bind(this);
     this._notifyFeatureChange = this.notifyFeatureChange.bind(this);
+    this._notifyLayerChange =   this.notifyLayerChange.bind(this);
     this._metadata =            {};
     this._mask =                0;
     this._parent;
+    this._needsToBeAdd =        [];
+    this._needsToBeRemove =     [];
 }, EventEmitter, 'C.Geo.Layer');
 
 /*
@@ -56,10 +59,45 @@ C.Geo.Layer.prototype.get = function (key) {
 };
 
 C.Geo.Layer.prototype.__added = function () {
+//    console.log('added', this._features.length, this._needsToBeRemove.length, this._needsToBeAdd.length);
+    for (var i = 0; i < this._features.length; ++i) {
+        var feature = this._features[i];
+        if (feature instanceof C.Geo.Layer) {
+            feature.__added();
+        } else {
+            this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.ADDED, feature);
+        }
+    }
+    for (var i = 0; i < this._needsToBeRemove.length; ++i) {
+        var feature = this._needsToBeRemove[i];
+//        console.log('nr', feature);
+        if (feature instanceof C.Geo.Layer) {
+            this.notifyLayerChange(C.Geo.Layer.EventType.REMOVED, feature);
+            feature.__removed();
+        } else {
+//            feature._nr = true;
+//            feature.__graphics._nr = true;
+//            console.log('notify remove');
+            this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.REMOVED, feature);
+        }
+    }
+    this._needsToBeRemove = [];
+    for (var i = 0; i < this._needsToBeAdd.length; ++i) {
+        var feature = this._needsToBeAdd[i];
+        if (feature instanceof C.Geo.Layer) {
+            this.notifyLayerChange(C.Geo.Layer.EventType.ADDED, feature);
+            feature.__added();
+        } else {
+            this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.ADDED, feature);
+        }
+        this._features.push(feature);
+    }
+    this._needsToBeAdd = [];
     this.emit('added', this);
 };
 
 C.Geo.Layer.prototype.__removed = function () {
+    //    console.log('remove', this);
     this.emit('removed', this);
 };
 
@@ -75,57 +113,89 @@ C.Geo.Layer.prototype.add = function (feature) {
     if (feature === undefined ||
         (feature instanceof C.Geo.Feature.Feature !== true &&
          feature instanceof C.Geo.Layer !== true) ||
-        this._features.indexOf(feature) !== -1) {
+        this._features.indexOf(feature) !== -1 ||
+        this._needsToBeAdd.indexOf(feature) !== -1) {
         return false;
     }
 
-    this._features.push(feature);
+    var idx;
+    if ((idx = this._needsToBeRemove.indexOf(feature)) !== -1) {
+        this._needsToBeRemove.splice(idx, 1);
+    }
 
     if (feature instanceof C.Geo.Feature.Feature) {
         feature.on('dirty', this._featureDirty);
+        feature._wasHandled = false;
         this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.ADDED, feature);
+        if (!feature._wasHandled) {
+            this._needsToBeAdd.push(feature);
+        } else {
+            this._features.push(feature);
+        }
+        delete feature._wasHandled;
         this.emit('featureAdded', feature);
     } else {
         feature._parent = this; //TODO if parent already set remove it
         feature.on('dirty', this._layerDirty);
         feature.on('featureChange', this._layerFeatureChange);
-        feature.on('layerChange', this._notifyFeatureChange);
+        feature.on('layerChange', this._notifyLayerChange);
+        feature._wasHandled = false;
         this.notifyLayerChange(C.Geo.Layer.EventType.ADDED, feature);
+        if (!feature._wasHandled) {
+            this._needsToBeAdd.push(feature);
+        } else {
+            this._features.push(feature);
+            feature.__added();
+        }
+        delete feature._wasHandled;
         this.emit('layerAdded', feature);
-        feature.__added();
     }
     return true;
 };
-
 // Alias
 C.Geo.Layer.prototype.addLayer = C.Geo.Layer.prototype.addFeature = C.Geo.Layer.prototype.add;
 
 C.Geo.Layer.prototype.remove = function (feature) {
-    var idx;
     if (feature === undefined ||
         (feature instanceof C.Geo.Feature.Feature !== true &&
          feature instanceof C.Geo.Layer !== true) ||
-        (idx=this._features.indexOf(feature)) === -1) {
+        this._needsToBeRemove.indexOf(feature) !== -1) {
         return false;
     }
 
-    this._features.splice(idx, 1);
+    var idx = this._features.indexOf(feature);
+    var idx_ = this._needsToBeAdd.indexOf(feature);
+
+    if (idx === -1 && idx_ === -1) { return false; }
+
+    if (idx !== -1) { this._features.splice(idx, 1); }
+    if (idx_ !== -1) { this._needsToBeAdd.splice(idx_, 1); }
 
     if (feature instanceof C.Geo.Feature.Feature) {
         feature.off('dirty', this._featureDirty);
+        feature._wasHandled = false;
         this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.REMOVED, feature);
+        if (idx !== -1 && !feature._wasHandled) {
+            this._needsToBeRemove.push(feature);
+        }
+        delete feature._wasHandled;
         this.emit('featureRemoved', feature);
     } else {
         feature.off('dirty', this._layerDirty);
         feature.off('featureChange', this._layerFeatureChange);
-        feature.off('layerChange', this._notifyFeatureChange);
+        feature.off('layerChange', this._notifyLayerChange);
+        feature._wasHandled = false;
         this.notifyLayerChange(C.Geo.Layer.EventType.REMOVED, feature);
+        if (idx !== -1 && !feature._wasHandled) {
+            this._needsToBeRemove.push(feature);
+        } else {
+            feature.__removed();
+        }
+        delete feature._wasHandled;
         this.emit('layerRemoved', feature);
-        feature.__removed();
     }
     return true;
 };
-
 // Alias
 C.Geo.Layer.prototype.removeLayer = C.Geo.Layer.prototype.removeFeature = C.Geo.Layer.prototype.remove;
 
@@ -146,7 +216,6 @@ C.Geo.Layer.prototype.move = function (feature, toIdx) {
     this.notifyFeatureChange(C.Geo.Layer.EventType.MOVED, eventData);
     this.emit('featureMoved', eventData);
 };
-
 // Alias
 C.Geo.Layer.prototype.moveLayer = C.Geo.Layer.prototype.moveFeature = C.Geo.Layer.prototype.move;
 
@@ -159,9 +228,25 @@ C.Geo.Layer.prototype.notifyFeatureChange = function (eventType, feature) {
 };
 
 C.Geo.Layer.prototype.clearLayer = function () {
-    for (var j = this._features.length; j > 0; --j) {
-        this.remove(this._features[0]);
+    if (this._needsToBeAdd.length > 0) {
+        console.log('jolie merde');
     }
+    for (var j = this._features.length; j > 0; --j) {
+        C.Geo.Layer.prototype.remove.call(this, this._features[0]);
+    }
+};
+
+C.Geo.Layer.prototype.getBounds = function () {
+
+    var bounds = new C.Geometry.Bounds();
+
+    for (var i = 0; i < this._features.length; ++i) {
+        var feature = this._features[i];
+        if (feature.getBounds) {
+            bounds.extend(feature.getBounds());
+        }
+    }
+    return bounds;
 };
 
 C.Geo.Layer.prototype.opacity = function (opacity) {

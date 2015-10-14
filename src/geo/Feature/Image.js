@@ -167,3 +167,7 @@ C.Geo.Feature.Image.prototype.scaleMode = function (scaleMode) {
     this.makeDirty();
     return this._scaleMode;
 };
+
+C.Geo.Feature.Image.prototype.getBounds = function () {
+    return new C.Geometry.Bounds(this._location);
+};

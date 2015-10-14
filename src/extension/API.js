@@ -17,6 +17,11 @@ C.Extension.API = function (context) {
             FeatureType: C.Geo.Feature.Feature.FeatureType,
 
             Layer: C.Geo.Layer_new_ctr,
+            Layer_class: C.Geo.Layer,
+            FeatureGroup_class: C.Geo.FeatureGroup,
+            BoundedLayer: C.Geo.BoundedLayer_new_ctr,
+            Bounds: C.Geometry.Bounds_new_ctr,
+            Text: C.Geo.Feature.Text_new_ctr,
 //            LayerGroup: C.Helpers.layermanager.createGroup.bind(C.Helpers.layermanager, context),
 
             Popup: C.UI.Popup_new_ctr.bind(context),

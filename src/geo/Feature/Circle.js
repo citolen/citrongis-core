@@ -13,6 +13,8 @@ C.Geo.Feature.Circle = C.Utils.Inherit(function (base, options) {
 
     this._location = options.location;
 
+    this._locationChanged = false;
+
     this._radius = options.radius || 1;
 
     this._backgroundColor = options.backgroundColor || '#000000';
@@ -34,13 +36,22 @@ C.Geo.Feature.Circle_new_ctr = function () {
     return new C.Geo.Feature.Circle_ctr(arguments);
 };
 
+C.Geo.Feature.Circle.MaskIndex = {
+    LOCATION: 2,
+    RADIUS: 4,
+    BACKGROUNDCOLOR: 8,
+    OUTLINECOLOR: 16,
+    OUTLINEWIDTH: 32
+};
+
 C.Geo.Feature.Circle.prototype.location = function (location) {
     if (location === undefined || location instanceof C.Geometry.Point === false) {
         return this._location;
     }
 
     this._location = location;
-
+    this._locationChanged = true;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.LOCATION;
     this.emit('locationChanged', location);
     this.makeDirty();
     return this._location;
@@ -52,6 +63,7 @@ C.Geo.Feature.Circle.prototype.radius = function (radius) {
     }
 
     this._radius = radius;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.RADIUS;
     this.emit('radiusChanged', radius);
     this.makeDirty();
     return this._radius;
@@ -63,6 +75,7 @@ C.Geo.Feature.Circle.prototype.backgroundColor = function (backgroundColor) {
     }
 
     this._backgroundColor = backgroundColor;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.BACKGROUNDCOLOR;
     this.emit('backgroundColorChanged', backgroundColor);
     this.makeDirty();
     return this._backgroundColor;
@@ -74,6 +87,7 @@ C.Geo.Feature.Circle.prototype.outlineColor = function (outlineColor) {
     }
 
     this._outlineColor = outlineColor;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.OUTLINECOLOR;
     this.emit('outlineColorChanged', outlineColor);
     this.makeDirty();
     return this._outlineColor;
@@ -85,7 +99,12 @@ C.Geo.Feature.Circle.prototype.outlineWidth = function (outlineWidth) {
     }
 
     this._outlineWidth = outlineWidth;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.OUTLINEWIDTH;
     this.emit('outlineWidthChanged', outlineWidth);
     this.makeDirty();
     return this._outlineWidth;
+};
+
+C.Geo.Feature.Circle.prototype.getBounds = function () {
+    return new C.Geometry.Bounds(this._location);
 };

@@ -16,6 +16,8 @@ C.Schema.SchemaBase = function (options) {
     this._originY = options.originY; //
 
     this._extent = options.extent; // BoundingBox
+
+    this._resolutions = options.resolutions;
 };
 
 C.Schema.SchemaBase.prototype.translate = function (viewport, tx, ty) {

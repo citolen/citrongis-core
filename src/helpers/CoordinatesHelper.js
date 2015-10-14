@@ -13,6 +13,11 @@ C.Helpers.CoordinatesHelper.TransformTo = function (point, to) {
     return (new C.Geometry.Point(tmp[0], tmp[1], point.Z, C.Helpers.CoordinatesHelper._checkProj(to)));
 };
 
+C.Helpers.CoordinatesHelper.TransformVector2D = function (point, from, to) {
+    var tmp = proj4(from, to, [point.X, point.Y]);
+    return new C.Geometry.Vector2(tmp[0], tmp[1]);
+};
+
 C.Helpers.CoordinatesHelper._checkProj = function (item) {
     if (item === undefined) {
         return (item);
