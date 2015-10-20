@@ -15,7 +15,7 @@ C.Schema.SchemaBase = function (options) {
 
     this._originY = options.originY; //
 
-    this._extent = options.extent; // BoundingBox
+    this._extent = options.extent; // Extent (boundaries)
 
     this._resolutions = options.resolutions;
 };

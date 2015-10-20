@@ -56,6 +56,7 @@ C.System.Viewport.prototype.getBounds = function () {
     bounds.extend(this._bbox._bottomRight);
     bounds.extend(this._bbox._topLeft);
     bounds.extend(this._bbox._topRight);
+    bounds.clamp(this._schema._extent);
     return bounds;
 };
 
