@@ -39,7 +39,23 @@ var fileHandle = function (url, callback) {
     } else {
         this._decoder = {
             decode: function ab2str(buf) {
-                return String.fromCharCode.apply(null, buf);
+                if (buf.byteLength == 0) return ""
+                var bufView = new Uint8Array(buf);
+                if (bufView[0]==0) return "";
+                var unis = [];
+                var step = 32768;
+                var str = "";
+                unis.push(bufView[0]);
+                for (var i = 1; i < bufView.length; i++) {
+                    if (bufView[i] == 0) break;
+                    unis.push(bufView[i]);
+                    if (i % step == 0) {
+                        str += String.fromCharCode.apply(null, unis);
+                        unis = [];
+                    }
+                }
+                str += String.fromCharCode.apply(null, unis);
+                return str;
             }
         };
     }
