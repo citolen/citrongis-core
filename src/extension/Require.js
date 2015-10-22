@@ -44,8 +44,8 @@ C.Extension.Require_single = function (path, callback, options) {
     switch (pathType) {
         case 0: //web
 
-            $.get(path, function (err) {
-                //TODO handle other type
+            $.get(path, function (data) {
+                callback(null, data);
             }, "text").fail(function () {
                 //TODO find a best way
                 var oldWrite = document.write;
