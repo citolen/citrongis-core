@@ -92,6 +92,7 @@ C.Extension.Extension.prototype.destroy = function () {
     this._destroyed = true;
     this._module.removeLayerFromMap();
     this._module.ui.destroy();
+    C.UI.PopupManager.clearFromContext(this);
 };
 
 C.Extension.Extension.prototype.setupEnvironment = function () {

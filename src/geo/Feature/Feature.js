@@ -45,6 +45,14 @@ C.Geo.Feature.Feature.FeatureType = {
     TEXT: 4
 };
 
+C.Geo.Feature.Feature.prototype.__added = function () {
+    this.emit('added', this);
+};
+
+C.Geo.Feature.Feature.prototype.__removed = function () {
+    this.emit('removed', this);
+};
+
 C.Geo.Feature.Feature.prototype.on = function (eventName) {
     if (!this._interactive && C.Geo.Feature.Feature.InteractiveEvents.indexOf(eventName) != -1) {
         this._mask |= C.Geo.Feature.Feature.InteractiveMask;

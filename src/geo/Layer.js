@@ -59,37 +59,31 @@ C.Geo.Layer.prototype.get = function (key) {
 };
 
 C.Geo.Layer.prototype.__added = function () {
-//    console.log('added', this._features.length, this._needsToBeRemove.length, this._needsToBeAdd.length);
     for (var i = 0; i < this._features.length; ++i) {
         var feature = this._features[i];
-        if (feature instanceof C.Geo.Layer) {
-            feature.__added();
-        } else {
+        if (feature instanceof C.Geo.Feature.Feature) {
             this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.ADDED, feature);
         }
+        feature.__added();
     }
     for (var i = 0; i < this._needsToBeRemove.length; ++i) {
         var feature = this._needsToBeRemove[i];
-//        console.log('nr', feature);
         if (feature instanceof C.Geo.Layer) {
             this.notifyLayerChange(C.Geo.Layer.EventType.REMOVED, feature);
-            feature.__removed();
         } else {
-//            feature._nr = true;
-//            feature.__graphics._nr = true;
-//            console.log('notify remove');
             this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.REMOVED, feature);
         }
+        feature.__removed();
     }
     this._needsToBeRemove = [];
     for (var i = 0; i < this._needsToBeAdd.length; ++i) {
         var feature = this._needsToBeAdd[i];
         if (feature instanceof C.Geo.Layer) {
             this.notifyLayerChange(C.Geo.Layer.EventType.ADDED, feature);
-            feature.__added();
         } else {
             this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.ADDED, feature);
         }
+        feature.__added();
         this._features.push(feature);
     }
     this._needsToBeAdd = [];
@@ -99,9 +93,9 @@ C.Geo.Layer.prototype.__added = function () {
 C.Geo.Layer.prototype.__removed = function () {
     for (var i = 0; i < this._features.length; ++i) {
         var feature = this._features[i];
-        if (feature instanceof C.Geo.Layer) {
+//        if (feature instanceof C.Geo.Layer) {
             feature.__removed();
-        }
+//        }
     }
     this.emit('removed', this);
 };
@@ -136,6 +130,7 @@ C.Geo.Layer.prototype.add = function (feature) {
             this._needsToBeAdd.push(feature);
         } else {
             this._features.push(feature);
+            feature.__added();
         }
         delete feature._wasHandled;
         this.emit('featureAdded', feature);
@@ -182,6 +177,8 @@ C.Geo.Layer.prototype.remove = function (feature) {
         this.notifyFeatureChange(C.Geo.Feature.Feature.EventType.REMOVED, feature);
         if (idx !== -1 && !feature._wasHandled) {
             this._needsToBeRemove.push(feature);
+        } else {
+            feature.__removed();
         }
         delete feature._wasHandled;
         this.emit('featureRemoved', feature);

@@ -105,3 +105,13 @@ C.UI.PopupManager.unregister = function (popup) {
     C.UI.PopupManager.popupcontainer.removeChild(popup.dom);
     delete popup.location;
 };
+
+C.UI.PopupManager.clearFromContext = function (context) {
+    for (var i = 0; i < C.UI.PopupManager.popups.length; ++i) {
+        var popup = C.UI.PopupManager.popups[i];
+        if (popup._context == context) {
+            C.UI.PopupManager.unregister(popup);
+            --i;
+        }
+    }
+};
