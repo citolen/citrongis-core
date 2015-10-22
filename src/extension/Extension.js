@@ -7,11 +7,12 @@
 C.Extension.AR_STRINGS_LOCALIZATION = 'strings.json';
 C.Extension.AR_PACKAGE = 'package.json';
 
-C.Extension.Extension = function (handler, map, callback) {
+C.Extension.Extension = C.Utils.Inherit(function (base, handler, map, callback) {
+
+    base();
 
     var self = this;
     self._map = map;
-
     this._resources = new C.Extension.ExtensionResources(handler, function (err, resources) {
 
         if (err) { return callback(err); }
@@ -32,7 +33,7 @@ C.Extension.Extension = function (handler, map, callback) {
             });
         });
     });
-};
+}, EventEmitter, 'C.Extension.Extension');
 
 C.Extension.Extension_ctr = function (handler, callback) {
     new C.Extension.Extension(handler, this._map, function (err, extension) {
@@ -83,6 +84,8 @@ C.Extension.Extension.prototype.run = function () {
         self._module.addLayerToMap();
 
         C.Extension.Require.call(self, start_script);
+
+        self.emit('started', self);
     });
 };
 
@@ -93,6 +96,7 @@ C.Extension.Extension.prototype.destroy = function () {
     this._module.removeLayerFromMap();
     this._module.ui.destroy();
     C.UI.PopupManager.clearFromContext(this);
+    this.emit('stopped', this);
 };
 
 C.Extension.Extension.prototype.setupEnvironment = function () {
