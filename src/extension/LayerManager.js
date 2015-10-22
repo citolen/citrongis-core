@@ -38,6 +38,27 @@ C.Extension.LayerManager.prototype.addLayer = function (layer) {
     return true;
 };
 
+C.Extension.LayerManager.prototype.removeLayer = function (layer) {
+
+    var idx;
+    if (layer == undefined ||
+        layer instanceof C.Geo.Layer !== true ||
+        (idx = this._layers.indexOf(layer)) == -1) {
+        return false;
+    }
+
+    this._layers.splice(idx, 1);
+
+    layer.off('dirty', this._layerDirty);
+    layer.off('featureChange', this._layerFeatureChange);
+    layer.off('layerChange', this._layerChange);
+
+    this.notifyLayerChange(C.Geo.Layer.EventType.REMOVED, layer);
+    this.emit('layerRemoved', layer);
+    layer.__removed();
+    return true;
+};
+
 function LayerDirty(layer) {
     this.notifyLayerChange(C.Geo.Layer.EventType.UPDATED, layer);
     layer._dirty = false;

@@ -26,3 +26,7 @@ C.Extension.Module = function (context, strings, layerManager) {
 C.Extension.Module.prototype.addLayerToMap = function () {
     this._layerManager.addLayer(this._rootLayer);
 };
+
+C.Extension.Module.prototype.removeLayerFromMap = function () {
+    this._layerManager.removeLayer(this._rootLayer);
+};

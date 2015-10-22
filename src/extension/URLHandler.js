@@ -34,7 +34,16 @@ var fileHandle = function (url, callback) {
 
     this._url = url;
     this._content = null;
-    this._decoder = new TextDecoder();
+    if ('TextDecoder' in window) {
+        this._decoder = new TextDecoder();
+    } else {
+        this._decoder = {
+            decode: function ab2str(buf) {
+                return String.fromCharCode.apply(null, buf);
+            }
+        };
+    }
+
 
     var self = this;
 

@@ -7,9 +7,10 @@
 C.Extension.AR_STRINGS_LOCALIZATION = 'strings.json';
 C.Extension.AR_PACKAGE = 'package.json';
 
-C.Extension.Extension = function (handler, layerManager, callback) {
+C.Extension.Extension = function (handler, map, callback) {
 
     var self = this;
+    self._map = map;
 
     this._resources = new C.Extension.ExtensionResources(handler, function (err, resources) {
 
@@ -22,32 +23,50 @@ C.Extension.Extension = function (handler, layerManager, callback) {
             if (strings_handle) {
                 localization = JSON.parse(strings_handle.asText());
             }
-            self._module = new C.Extension.Module(self, localization, layerManager);
+            self._module = new C.Extension.Module(self, localization, self._map._layerManager);
 
             self._resources.file(C.Extension.AR_PACKAGE, function (err, package_handle) {
                 self._package = JSON.parse(package_handle.asText());
-
+                self._storage = new C.Extension.Storage({package_name: self._package.name});
                 callback(null, self);
             });
         });
     });
 };
 
-//C.Extension.Extension.prototype.loadLocalization = function () {
-//
-//    var localization;
-//    if (this.handle.file(C.Extension.AR_STRINGS_LOCALIZATION)) {
-//        try {
-//            localization = JSON.parse(this.handle.file(C.Extension.AR_STRINGS_LOCALIZATION).asText());
-//        } catch (e) {
-//            localization = {};
-//        }
-//    } else {
-//        localization = {};
-//    }
-//
-//
-//};
+C.Extension.Extension_ctr = function (handler, callback) {
+    new C.Extension.Extension(handler, this._map, function (err, extension) {
+        if (err) {
+            return callback(err);
+        }
+
+        C.Extension.Manager.register(extension);
+
+        extension._module.ui.on('display', function (element, nowindow) {
+
+            element.style.top = '50%';
+            element.style.left = '50%';
+            extension._map._extDiv.appendChild(element);
+
+            if (!nowindow) {
+                $(element).draggable({
+                    containment: "#citrongis",
+                    scroll: false,
+                    handle: '.citrongisextension-header'
+                });
+            }
+        });
+
+        extension._module.ui.on('destroy', function (element) {
+
+            extension._map._extDiv.removeChild(element);
+
+        });
+
+        extension.run();
+        callback(null, extension);
+    });
+};
 
 //TODO put strings in global file
 C.Extension.Extension.prototype.run = function () {
@@ -65,6 +84,14 @@ C.Extension.Extension.prototype.run = function () {
 
         C.Extension.Require.call(self, start_script);
     });
+};
+
+C.Extension.Extension.prototype.destroy = function () {
+
+    if (this._destroyed) { return; }
+    this._destroyed = true;
+    this._module.removeLayerFromMap();
+    this._module.ui.destroy();
 };
 
 C.Extension.Extension.prototype.setupEnvironment = function () {

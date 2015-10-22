@@ -22,9 +22,9 @@ C.Extension.ExtensionResources.prototype.checkHandler = function (callback) {
 };
 
 C.Extension.ExtensionResources.prototype.file = function (path, callback) {
-    if (this._handler instanceof URLHandler) {
-        this._handler.file(path, callback);
-    } else { //JSZip
+    if (this._handler instanceof JSZip) { //JSZip
         callback(null, this._handler.file(path));
+    } else {
+        this._handler.file(path, callback);
     }
 };

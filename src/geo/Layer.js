@@ -97,7 +97,12 @@ C.Geo.Layer.prototype.__added = function () {
 };
 
 C.Geo.Layer.prototype.__removed = function () {
-    //    console.log('remove', this);
+    for (var i = 0; i < this._features.length; ++i) {
+        var feature = this._features[i];
+        if (feature instanceof C.Geo.Layer) {
+            feature.__removed();
+        }
+    }
     this.emit('removed', this);
 };
 

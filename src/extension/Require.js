@@ -4,9 +4,9 @@
 
 'use strict';
 
-function handleJavascript (context, handle, callback) {
+function handleJavascript (context, handle, callback, options) {
 
-    var api = C.Extension.API(context);
+    var api = C.Extension.API(context, options);
     var argnames = '';
     var args = [];
     for (var api_key in api) {
@@ -27,10 +27,10 @@ function handleDefault (context, handle, callback) {
     callback(null, handle.asText());
 }
 
-function handleExtensionType (context, handle, extension, callback) {
+function handleExtensionType (context, handle, extension, callback, options) {
     switch (extension) {
         case 'js':
-            handleJavascript(context, handle, callback);
+            handleJavascript(context, handle, callback, options);
             break;
         default:
             handleDefault(context, handle, callback);
@@ -38,12 +38,7 @@ function handleExtensionType (context, handle, extension, callback) {
     }
 };
 
-C.Extension.Require = function (path, callback) {
-    //TODO debug
-    //console.log('[require]', path, 'from', this.currentPath);
-
-    if (!callback) { callback = function(){}; }
-
+C.Extension.Require_single = function (path, callback, options) {
     var self = this;
     var pathType = C.Utils.Path.getType(path);
     switch (pathType) {
@@ -73,38 +68,35 @@ C.Extension.Require = function (path, callback) {
                     return callback(err);
                 }
 
-                handleExtensionType(self, handle, C.Utils.Path.getExtension(path), callback);
+                handleExtensionType(self,
+                                    handle,
+                                    C.Utils.Path.getExtension(path),
+                                    callback,
+                                    options);
             });
             break;
     }
+};
 
-    //    if (this.handle && this.module && this.package) {
-    //        var filepath = path;
-    //
-    //        if (!this.handle.file(filepath) && this.currentPath.lastIndexOf('/') !== -1) {
-    //            filepath = C.Utils.Path.normalize(this.currentPath.substr(0, this.currentPath.lastIndexOf('/')) + '/' + filepath);
-    //        }
-    //
-    //        if (!this.handle.file(filepath)) {
-    //            return (undefined);
-    //        }
-    //
-    //        if (this.handle.file(filepath)) {
-    //
-    //            var content = this.handle.file(filepath).asText();
-    //            var context = C.Utils.Context.copy(this, filepath);
-    //            var fileExtension = path.split('.').pop();
-    //
-    //            if (fileExtension === 'js') {
-    //                eval('(function (module, require) {\
-    //                    ' + content + '\
-    //                    }).call(context.module.global, context.module, C.Extension.Require.bind(context));');
-    //            }
-    //
-    //            return (content);
-    //        }
-    //    } else {
-    //
-    //    }
-    //    return (undefined);
+C.Extension.Require = function (path, callback, options) {
+    //TODO debug
+    //console.log('[require]', path, 'from', this.currentPath);
+
+    if (!callback) { callback = function(){}; }
+
+    options = options || {};
+    if (path.constructor === Array) {
+        var exports = [];
+        var self = this;
+        async.eachSeries(path, function (item, cb) {
+            C.Extension.Require_single.call(self, item, function (err, expt) {
+                exports.push(expt);
+                cb(err);
+            }, options);
+        }, function (err) {
+            callback(err, exports);
+        });
+    } else {
+        C.Extension.Require_single.call(this, path, callback, options);
+    }
 };
