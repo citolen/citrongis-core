@@ -9,6 +9,7 @@ C.Geo.Layer = C.Utils.Inherit(function (base, options) {
 
     options = options || {};
 
+    this._name =                options.name;
     this._opacity =             options.opacity || 1.0;
     this._features =            [];
     this._dirty =               false;
