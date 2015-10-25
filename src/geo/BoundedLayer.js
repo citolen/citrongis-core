@@ -4,6 +4,17 @@
 
 'use strict';
 
+/**
+ * Creates a Bounded layer. Same as a C.Layer but only feature in the viewport are added to the map.
+ *
+ * @class BoundedLayer
+ * @namespace C
+ * @extend C.Layer
+ * @constructor
+ * @example
+ *      var bLayer = C.BoundedLayer();
+ *      bLayer.add(feature);
+ */
 C.Geo.BoundedLayer = C.Utils.Inherit(function (base, options) {
     options = options || {};
     base(options);

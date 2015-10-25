@@ -4,6 +4,16 @@
 
 'use strict';
 
+/**
+ * Creates bounds
+ *
+ * @class Bounds
+ * @namespace C
+ * @constructor
+ * @param {C.Vector2} [bottomLeft] BottomLeft coordinates.
+ * @param {C.Vector2} [topRight] TopRight coordinates.
+ * @param {Proj4} [crs] Coordinates Reference System.
+ */
 C.Geometry.Bounds = function (bottomLeft, topRight, crs) {
 
     this._bottomLeft;
@@ -29,6 +39,13 @@ C.Geometry.Bounds_new_ctr = function () {
     return new C.Geometry.Bounds_ctr(arguments);
 };
 
+/**
+ * Extend the bounds with a C.Point or C.Bounds
+ *
+ * @method extend
+ * @public
+ * @param {C.Point,C.Bounds} bounds New coordinates.
+ */
 C.Geometry.Bounds.prototype.extend = function (bounds) {
     if (bounds instanceof C.Geometry.Point || bounds instanceof C.Geometry.Vector2) {
         if (!this._bottomLeft || !this._topRight) {
@@ -64,6 +81,13 @@ C.Geometry.Bounds.prototype.extend = function (bounds) {
     }
 };
 
+/**
+ * Returns new bounds converted to the correct crs
+ *
+ * @method extend
+ * @public
+ * @param {Proj4} crsDest CRS to transform to.
+ */
 C.Geometry.Bounds.prototype.transformTo = function (crsDest) {
     if (!this._bottomLeft || !this._topRight) { return undefined; }
 
@@ -75,6 +99,13 @@ C.Geometry.Bounds.prototype.transformTo = function (crsDest) {
     return new C.Geometry.Bounds(bottomLeft, topRight, crsDest);
 };
 
+/**
+ * Returns the center of the bounds
+ *
+ * @method getCenter
+ * @public
+ * @return {C.Vector2} Current or new location.
+ */
 C.Geometry.Bounds.prototype.getCenter = function () {
     if (!this._bottomLeft || !this._topRight) {
         return new C.Geometry.Vector2(0,0);
@@ -84,6 +115,13 @@ C.Geometry.Bounds.prototype.getCenter = function () {
         (this._bottomLeft.Y + this._topRight.Y) / 2);
 };
 
+/**
+ * Clamp bounds to an extent
+ *
+ * @method clamp
+ * @public
+ * @param {C.Extent} extent Extent to clamp to.
+ */
 C.Geometry.Bounds.prototype.clamp = function (extent) {
     if (this._bottomLeft.X < extent._minX) { this._bottomLeft.X = extent._minX; }
     if (this._bottomLeft.X > extent._maxX) { this._bottomLeft.X = extent._maxX; }
@@ -95,6 +133,14 @@ C.Geometry.Bounds.prototype.clamp = function (extent) {
     if (this._topRight.Y > extent._maxY) { this._topRight.Y = extent._maxY; }
 };
 
+/**
+ * Check if bounds intersect
+ *
+ * @method intersect
+ * @public
+ * @param {C.Bounds} bounds Bounds to intersect to.
+ * @return {Boolean} True if it intersects, false otherwise.
+ */
 C.Geometry.Bounds.prototype.intersect = function (bounds) {
 
     var bottomLeft = this._bottomLeft;

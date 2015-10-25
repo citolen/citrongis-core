@@ -4,6 +4,22 @@
 
 'use strict';
 
+/**
+ * Creates a popup
+ *
+ * @class Popup
+ * @namespace C
+ * @constructor
+ * @param {C.Feature} feature Feature linked to the popup
+ * @param {Object} options Data
+ * @param {String} options.content Popup content.
+ * @param {Boolean} [options.auto] Open popup when added.
+ * @example
+ *      var popup = C.Popup({
+ *          feature: your_feature,
+ *          content: '<span>content</span>'
+ *      });
+ */
 C.UI.Popup = function (feature, options) {
     options = options || {};
 
@@ -53,6 +69,13 @@ C.UI.Popup_new_ctr = function () {
     return obj
 };
 
+/**
+ * Open the popup
+ *
+ * @method open
+ * @public
+ * @param {Event} event Event from click event on feature.
+ */
 C.UI.Popup.prototype.open = function (event) {
 
     event = event.data.originalEvent;
@@ -60,6 +83,12 @@ C.UI.Popup.prototype.open = function (event) {
 
 };
 
+/**
+ * Close the popup
+ *
+ * @method close
+ * @public
+ */
 C.UI.Popup.prototype.close = function () {
     C.UI.PopupManager.unregister(this);
 };

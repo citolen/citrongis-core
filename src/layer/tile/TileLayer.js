@@ -4,6 +4,26 @@
 
 'use strict';
 
+/**
+ * Creates a tile layer
+ *
+ * @class TileLayer
+ * @namespace C
+ * @extends C.Layer
+ * @constructor
+ * @param {Object} options Data
+ * @param {C.TileSource} options.source Tile source.
+ * @param {C.TileSchema} options.schema Tile schema.
+ * @example
+ *      var tileLayer = C.TileLayer({
+ *          source: C.TMSSource({
+ *              url: 'http://{server}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+ *              server: ['a', 'b', 'c']
+ *          }),
+ *          schema: C.TileSchema.SphericalMercator
+ *      });
+ *      tileLayer.addTo(my_data_layer);
+ */
 C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
 
     base(options);
@@ -52,6 +72,17 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
     this.loadRootTile();
 
 }, C.Geo.Layer, 'C.Layer.Tile.TileLayer');
+
+/*
+ *  Constructor
+ */
+C.Layer.Tile.TileLayer_ctr = function (args) {
+    return C.Layer.Tile.TileLayer.apply(this, args);
+};
+C.Layer.Tile.TileLayer_ctr.prototype = C.Layer.Tile.TileLayer.prototype;
+C.Layer.Tile.TileLayer_new_ctr = function () {
+    return new C.Layer.Tile.TileLayer_ctr(arguments);
+};
 
 /*
  *  init - initialization when added to the map

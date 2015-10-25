@@ -4,6 +4,17 @@
 
 'use strict';
 
+/**
+ * Abstract feature representation
+ *
+ * @class Feature
+ * @namespace C
+ * @extends EventEmitter
+ * @constructor
+ * @param {Object} [options] Data
+ * @param {Number} [options.opacity] Opacity of the feature.
+ * @param {Object} [options.metadata] Dictionary of metadata.
+ */
 C.Geo.Feature.Feature = C.Utils.Inherit(function (base, type, options) {
     base();
 
@@ -71,17 +82,43 @@ C.Geo.Feature.Feature.prototype.once = function (eventName) {
     EventEmitter.prototype.once.apply(this, arguments);
 };
 
+/**
+ * Add this to a layer
+ *
+ * @method addTo
+ * @public
+ * @param {C.Layer} container Layer to add yourself to.
+ * @return {Boolean} True is succesfully added.
+ */
 C.Geo.Feature.Feature.prototype.addTo = function (container) {
     if (container instanceof C.Geo.Layer) {
         return container.addFeature(this);
     }
+    return false;
 };
 
+/**
+ * Set a metadata
+ *
+ * @method set
+ * @public
+ * @param {Object} key Key link to value.
+ * @param {Object} value Value to store.
+ * @return {Object} Added value.
+ */
 C.Geo.Feature.Feature.prototype.set = function (key, value) {
     this._metadata[key] = value;
     return value;
 };
 
+/**
+ * Get a metadata
+ *
+ * @method get
+ * @public
+ * @param {Object} key Key link to value.
+ * @return {Object} Key value or null if not found.
+ */
 C.Geo.Feature.Feature.prototype.get = function (key) {
     if (key in this._metadata) {
         return this._metadata[key];
@@ -89,6 +126,14 @@ C.Geo.Feature.Feature.prototype.get = function (key) {
     return null;
 };
 
+/**
+ * Get/Set opacity
+ *
+ * @method opacity
+ * @public
+ * @param {Object} [opacity] New opacity.
+ * @return {Object} Current or new opacity.
+ */
 C.Geo.Feature.Feature.prototype.opacity = function (opacity) {
     if (opacity == undefined || this._opacity == opacity) {
         return (this._opacity);
@@ -105,18 +150,42 @@ C.Geo.Feature.Feature.prototype.makeDirty = function () {
     this.emit('dirty', this);
 };
 
+/**
+ * Feature on mouse down
+ * @event mousedown
+ * @param {C.Feature} self
+ * @param {Event} event
+ */
 C.Geo.Feature.Feature.prototype.__mousedown = function (event) {
     this.emit('mousedown', this, event);
 };
 
+/**
+ * Feature on mouse move
+ * @event mousemove
+ * @param {C.Feature} self
+ * @param {Event} event
+ */
 C.Geo.Feature.Feature.prototype.__mousemove = function (event) {
     this.emit('mousemove', this, event);
 };
 
+/**
+ * Feature on mouse up
+ * @event mouseup
+ * @param {C.Feature} self
+ * @param {Event} event
+ */
 C.Geo.Feature.Feature.prototype.__mouseup = function (event) {
     this.emit('mouseup', this, event);
 };
 
+/**
+ * Feature on click
+ * @event click
+ * @param {C.Feature} self
+ * @param {Event} event
+ */
 C.Geo.Feature.Feature.prototype.__click = function (event) {
     this.emit('click', this, event);
 };
@@ -125,6 +194,14 @@ C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {
 
 };
 
+/**
+ * Bind a popup to this feature, will open it when clicked
+ *
+ * @method bindPopup
+ * @public
+ * @param {C.Popup} popup Popup to bind.
+ * @return {C.Popup} Popup given as argument.
+ */
 C.Geo.Feature.Feature.prototype.bindPopup = function (popup) {
 
     this.on('click', function (feature, event) {

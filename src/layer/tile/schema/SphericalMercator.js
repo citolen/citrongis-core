@@ -4,6 +4,20 @@
 
 'use strict';
 
+/**
+ * TileSchema
+ *
+ * @class TileSchema
+ * @namespace C
+ */
+
+/**
+ * SphericalMercator WGS84 256px maxzoom: 21
+ * @property SphericalMercator
+ * @type C.TileSchema
+ * @example
+ *      C.TileSchema.SphericalMercator
+ */
 C.Layer.Tile.Schema.SphericalMercator = C.Utils.Inherit(function (base) {
     base({
 

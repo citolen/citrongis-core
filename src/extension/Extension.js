@@ -45,8 +45,8 @@ C.Extension.Extension_ctr = function (handler, callback) {
 
         extension._module.ui.on('display', function (element, nowindow) {
 
-            element.style.top = '50%';
-            element.style.left = '50%';
+            element.style.top = '30%';
+            element.style.left = '15%';
             extension._map._extDiv.appendChild(element);
 
             if (!nowindow) {
@@ -83,9 +83,9 @@ C.Extension.Extension.prototype.run = function () {
 
         self._module.addLayerToMap();
 
-        C.Extension.Require.call(self, start_script);
-
-        self.emit('started', self);
+        C.Extension.Require.call(self, start_script, function () {
+            self.emit('started', self);
+        });
     });
 };
 

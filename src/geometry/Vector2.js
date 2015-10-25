@@ -10,6 +10,17 @@ C.Geometry.Vector2 = function (x, y) {
     this.Y = y || 0.0;
 };
 
+/*
+ *  Constructor
+ */
+C.Geometry.Vector2_ctr = function (args) {
+    return C.Geometry.Vector2.apply(this, args);
+};
+C.Geometry.Vector2_ctr.prototype = C.Geometry.Vector2.prototype;
+C.Geometry.Vector2_new_ctr = function () {
+    return new C.Geometry.Vector2_ctr(arguments);
+};
+
 C.Geometry.Vector2.prototype.rotateAround = function (rotation, center) {
     var cosAngle = Math.cos(rotation);
     var sinAngle = Math.sin(rotation);

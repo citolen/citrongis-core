@@ -78,6 +78,21 @@ C.Extension.Require_single = function (path, callback, options) {
     }
 };
 
+/**
+ * Require a local or outside file. If it's javascript it will executed in the application context.
+ *
+ * @namespace
+ * @class require
+ * @constructor
+ * @param {String,Path} path Absolute or relative path to a file.
+ * @param {Function} callback Callback when file is loaded.
+ * @param {Object} [options] Data.
+ * @param {Boolean} [options.originalWindow] If true the global object window will not be replace.
+ * @example
+ *      require('https://....../my_lib.js', function (err, exports) {});
+ *
+ *      require(['https://....../my_lib.js', ...], function (err, exports Array<Object>) {});
+ */
 C.Extension.Require = function (path, callback, options) {
     //TODO debug
     //console.log('[require]', path, 'from', this.currentPath);

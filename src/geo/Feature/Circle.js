@@ -4,6 +4,30 @@
 
 'use strict';
 
+/**
+ * Creates a georeferenced Circle
+ *
+ * @class Circle
+ * @namespace C
+ * @extends C.Feature
+ * @constructor
+ * @param {Object} options Data
+ * @param {C.Point} options.location Coordinates.
+ * @param {Number} [options.radius] Radius in pixel.
+ * @param {Number} [options.color] Color in hexa.
+ * @param {Number} [options.outlineColor] Outline Color in hexa.
+ * @param {Number} [options.outlineWidth] Outline Width in pixel.
+ * @param {Number} [options.opacity] Opacity of the Circle.
+ * @param {Object} [options.metadata] Dictionary of metadata.
+ * @example
+ *      var circle = C.Circle({
+ *          location: C.LatLng(0, 0),
+ *          radius: 10,
+ *          color: 0x000000,
+ *          outlineColor: 0xff,
+ *          outlineWidth: 3
+ *      });
+ */
 C.Geo.Feature.Circle = C.Utils.Inherit(function (base, options) {
     base(C.Geo.Feature.Feature.FeatureType.CIRCLE, options);
 
@@ -17,9 +41,9 @@ C.Geo.Feature.Circle = C.Utils.Inherit(function (base, options) {
 
     this._radius = options.radius || 1;
 
-    this._backgroundColor = options.backgroundColor || '#000000';
+    this._color = options.color || 0x000000;
 
-    this._outlineColor = options.outlineColor || '#ffffff';
+    this._outlineColor = options.outlineColor || 0xffffff;
 
     this._outlineWidth = options.outlineWidth || 0;
 
@@ -39,11 +63,19 @@ C.Geo.Feature.Circle_new_ctr = function () {
 C.Geo.Feature.Circle.MaskIndex = {
     LOCATION: 2,
     RADIUS: 4,
-    BACKGROUNDCOLOR: 8,
+    COLOR: 8,
     OUTLINECOLOR: 16,
     OUTLINEWIDTH: 32
 };
 
+/**
+ * Returns the current location or sets a new one if an argument is given.
+ *
+ * @method location
+ * @public
+ * @param {C.Point} [location] New coordinates of the Circle.
+ * @return {C.Point} Current or new location.
+ */
 C.Geo.Feature.Circle.prototype.location = function (location) {
     if (location === undefined || location instanceof C.Geometry.Point === false) {
         return this._location;
@@ -57,6 +89,14 @@ C.Geo.Feature.Circle.prototype.location = function (location) {
     return this._location;
 };
 
+/**
+ * Returns the current radius or sets a new one if an argument is given.
+ *
+ * @method radius
+ * @public
+ * @param {Number} [radius] New radius of the Circle.
+ * @return {Number} Current or new radius.
+ */
 C.Geo.Feature.Circle.prototype.radius = function (radius) {
     if (radius === undefined || (typeof radius !== 'Number' && typeof radius !== 'Object') || this._radius == radius) {
         return this._radius;
@@ -69,18 +109,34 @@ C.Geo.Feature.Circle.prototype.radius = function (radius) {
     return this._radius;
 };
 
-C.Geo.Feature.Circle.prototype.backgroundColor = function (backgroundColor) {
-    if (backgroundColor === undefined || this._backgroundColor == backgroundColor) {
-        return this._backgroundColor;
+/**
+ * Returns the current color or sets a new one if an argument is given.
+ *
+ * @method color
+ * @public
+ * @param {Number} [color] New color of the Circle.
+ * @return {Number} Current or new color.
+ */
+C.Geo.Feature.Circle.prototype.color = function (color) {
+    if (color === undefined || this._color == color) {
+        return this._color;
     }
 
-    this._backgroundColor = backgroundColor;
-    this._mask |= C.Geo.Feature.Circle.MaskIndex.BACKGROUNDCOLOR;
-    this.emit('backgroundColorChanged', backgroundColor);
+    this._color = color;
+    this._mask |= C.Geo.Feature.Circle.MaskIndex.COLOR;
+    this.emit('colorChanged', color);
     this.makeDirty();
-    return this._backgroundColor;
+    return this._color;
 };
 
+/**
+ * Returns the current outline color or sets a new one if an argument is given.
+ *
+ * @method outlineColor
+ * @public
+ * @param {Number} [outlineColor] New outline color.
+ * @return {Number} Current or new outline color.
+ */
 C.Geo.Feature.Circle.prototype.outlineColor = function (outlineColor) {
     if (outlineColor === undefined || this._outlineColor == outlineColor) {
         return this._outlineColor;
@@ -93,6 +149,14 @@ C.Geo.Feature.Circle.prototype.outlineColor = function (outlineColor) {
     return this._outlineColor;
 };
 
+/**
+ * Returns the current outline width or sets a new one if an argument is given.
+ *
+ * @method outlineWidth
+ * @public
+ * @param {Number} [outlineWidth] New radius of the outline width.
+ * @return {Number} Current or new outline width.
+ */
 C.Geo.Feature.Circle.prototype.outlineWidth = function (outlineWidth) {
     if (outlineWidth === undefined || this._outlineWidth == outlineWidth) {
         return this._outlineWidth;
@@ -105,6 +169,13 @@ C.Geo.Feature.Circle.prototype.outlineWidth = function (outlineWidth) {
     return this._outlineWidth;
 };
 
+/**
+ * Returns the bounds of the circle.
+ *
+ * @method getBounds
+ * @public
+ * @return {C.Bounds} Bounds of the circle.
+ */
 C.Geo.Feature.Circle.prototype.getBounds = function () {
     return new C.Geometry.Bounds(this._location);
 };

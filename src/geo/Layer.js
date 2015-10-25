@@ -4,6 +4,22 @@
 
 'use strict';
 
+/**
+ * Creates a layer
+ *
+ * @class Layer
+ * @namespace C
+ * @extends EventEmitter
+ * @constructor
+ * @param {Object} [options] Data
+ * @param {String} [options.name] Layer name.
+ * @param {Number} [options.opacity] Layer opacity.
+ * @param {Object} [options.metadata] Dictionary of metadata.
+ * @example
+ *      var layer = C.Layer({
+ *          name: 'my_data_layer'
+ *      });
+ */
 C.Geo.Layer = C.Utils.Inherit(function (base, options) {
     base();
 
@@ -47,11 +63,28 @@ C.Geo.Layer.EventType = {
     MOVED: 3
 };
 
+/**
+ * Set a metadata
+ *
+ * @method set
+ * @public
+ * @param {Object} key Key link to value.
+ * @param {Object} value Value to store.
+ * @return {Object} Added value.
+ */
 C.Geo.Layer.prototype.set = function (key, value) {
     this._metadata[key] = value;
     return value;
 };
 
+/**
+ * Get a metadata
+ *
+ * @method get
+ * @public
+ * @param {Object} key Key link to value.
+ * @return {Object} Key value or null if not found.
+ */
 C.Geo.Layer.prototype.get = function (key) {
     if (key in this._metadata) {
         return this._metadata[key];
@@ -101,14 +134,37 @@ C.Geo.Layer.prototype.__removed = function () {
     this.emit('removed', this);
 };
 
+/**
+ * Features count
+ *
+ * @method count
+ * @public
+ * @return {Number} Features count.
+ */
 C.Geo.Layer.prototype.count = function () {
     return this._features.length;
 };
 
+/**
+ * Add this to a layer
+ *
+ * @method addTo
+ * @public
+ * @param {C.Layer} container Layer to add yourself to.
+ * @return {Boolean} True is succesfully added.
+ */
 C.Geo.Layer.prototype.addTo = function (container) {
     return container.add(this);
 };
 
+/**
+ * Add a feature/layer to this layer
+ *
+ * @method add
+ * @public
+ * @param {C.Feature,C.Layer} feature feature/layer to add.
+ * @return {Boolean} True is succesfully added.
+ */
 C.Geo.Layer.prototype.add = function (feature) {
     if (feature === undefined ||
         (feature instanceof C.Geo.Feature.Feature !== true &&
@@ -154,8 +210,32 @@ C.Geo.Layer.prototype.add = function (feature) {
     return true;
 };
 // Alias
+/**
+ * Add a feature to this layer
+ *
+ * @method addFeature
+ * @public
+ * @param {C.Feature} feature feature to add.
+ * @return {Boolean} True is succesfully added.
+ */
+/**
+ * Add a layer to this layer
+ *
+ * @method addLayer
+ * @public
+ * @param {C.Layer} layer layer to add.
+ * @return {Boolean} True is succesfully added.
+ */
 C.Geo.Layer.prototype.addLayer = C.Geo.Layer.prototype.addFeature = C.Geo.Layer.prototype.add;
 
+/**
+ * Remove a feature/layer to this layer
+ *
+ * @method remove
+ * @public
+ * @param {C.Feature,C.Layer} feature feature/layer to remove.
+ * @return {Boolean} True is succesfully removed.
+ */
 C.Geo.Layer.prototype.remove = function (feature) {
     if (feature === undefined ||
         (feature instanceof C.Geo.Feature.Feature !== true &&
@@ -200,8 +280,33 @@ C.Geo.Layer.prototype.remove = function (feature) {
     return true;
 };
 // Alias
+/**
+ * Remove a feature to this layer
+ *
+ * @method removeFeature
+ * @public
+ * @param {C.Feature} feature feature to remove.
+ * @return {Boolean} True is succesfully removed.
+ */
+/**
+ * Remove a layer to this layer
+ *
+ * @method removeLayer
+ * @public
+ * @param {C.Layer} layer layer to remove.
+ * @return {Boolean} True is succesfully removed.
+ */
 C.Geo.Layer.prototype.removeLayer = C.Geo.Layer.prototype.removeFeature = C.Geo.Layer.prototype.remove;
 
+/**
+ * Move a feature/layer inside this layer
+ *
+ * @method move
+ * @public
+ * @param {C.Feature,C.Layer} feature feature/layer to move.
+ * @param {Number} toIdx index where feature should move to.
+ * @return {Boolean} True is succesfully moved.
+ */
 C.Geo.Layer.prototype.move = function (feature, toIdx) {
     var idx;
     if (feature === undefined ||
@@ -220,6 +325,24 @@ C.Geo.Layer.prototype.move = function (feature, toIdx) {
     this.emit('featureMoved', eventData);
 };
 // Alias
+/**
+ * Move a feature
+ *
+ * @method moveFeature
+ * @public
+ * @param {C.Feature} feature feature to move.
+ * @param {Number} toIdx index where feature should move to.
+ * @return {Boolean} True is succesfully removed.
+ */
+/**
+ * Move a layer
+ *
+ * @method moveLayer
+ * @public
+ * @param {C.Layer} layer layer to move.
+ * @param {Number} toIdx index where feature should move to.
+ * @return {Boolean} True is succesfully moved.
+ */
 C.Geo.Layer.prototype.moveLayer = C.Geo.Layer.prototype.moveFeature = C.Geo.Layer.prototype.move;
 
 C.Geo.Layer.prototype.notifyLayerChange = function (eventType, layer) {
@@ -230,6 +353,12 @@ C.Geo.Layer.prototype.notifyFeatureChange = function (eventType, feature) {
     this.emit('featureChange', eventType, feature, this);
 };
 
+/**
+ * Remove everything from the layer.
+ *
+ * @method clearLayer
+ * @public
+ */
 C.Geo.Layer.prototype.clearLayer = function () {
     if (this._needsToBeAdd.length > 0) {
         console.log('jolie merde');
@@ -239,6 +368,13 @@ C.Geo.Layer.prototype.clearLayer = function () {
     }
 };
 
+/**
+ * Returns the bounds of the layer.
+ *
+ * @method getBounds
+ * @public
+ * @return {C.Bounds} Bounds of the layer.
+ */
 C.Geo.Layer.prototype.getBounds = function () {
 
     var bounds = new C.Geometry.Bounds();
@@ -252,6 +388,14 @@ C.Geo.Layer.prototype.getBounds = function () {
     return bounds;
 };
 
+/**
+ * Get/Set opacity
+ *
+ * @method opacity
+ * @public
+ * @param {Object} [opacity] New opacity.
+ * @return {Object} Current or new opacity.
+ */
 C.Geo.Layer.prototype.opacity = function (opacity) {
     if (opacity === undefined || this._opacity === opacity) {
         return this._opacity;

@@ -4,6 +4,18 @@
 
 'use strict';
 
+/**
+ * Creates a georeferenced Point using latitude, longitude coordinates
+ *
+ * @class LatLng
+ * @namespace C
+ * @extend C.Point
+ * @constructor
+ * @param {Number} [latitude]
+ * @param {Number} [longitude]
+ * @example
+ *      var point = C.LatLng(48, 3);
+ */
 C.Geometry.LatLng = C.Utils.Inherit(function (base, y, x) {
 
     base(x, y, undefined, C.Helpers.ProjectionsHelper.WGS84);
