@@ -438,7 +438,11 @@ C.Layer.Tile.TileLayer.prototype.createSubstitute = function (tile, zoomDirectio
             var position = parent.positionInTile(tile);
             var size = this._schema._tileWidth / position.pZ;
 
-            var tmp = parentObj.feature.crop(new C.Geometry.Rectangle(position.x * this._schema._tileWidth, position.y * this._schema._tileHeight, size, size));
+            var tmp = parentObj.feature.crop(new C.Geometry.Rectangle(
+                position.x/* * this._schema._tileWidth*/,
+                position.y/* * this._schema._tileHeight*/,
+                size / this._schema._tileWidth,
+                size / this._schema._tileHeight));
 
 
             var location = this._schema.tileToWorld(tile, C.Helpers.viewport._resolution, trsize, this._anchor);

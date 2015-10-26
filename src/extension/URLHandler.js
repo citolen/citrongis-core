@@ -55,7 +55,7 @@ var fileHandle = function (url, callback) {
                     }
                 }
                 str += String.fromCharCode.apply(null, unis);
-                return str;
+                return decodeURIComponent(escape(str));
             }
         };
     }

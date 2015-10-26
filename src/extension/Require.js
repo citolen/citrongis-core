@@ -48,7 +48,13 @@ C.Extension.Require_single = function (path, callback, options) {
         case 0: //web
 
             $.get(path, function (data) {
-                callback(null, data);
+                handleExtensionType(self,
+                                    {
+                    asText: function (data) { return data; }.bind(null, data)
+                },
+                                    C.Utils.Path.getExtension(path),
+                                    callback,
+                                    options);
             }, "text").fail(function () {
                 //TODO find a best way
                 var oldWrite = document.write;
