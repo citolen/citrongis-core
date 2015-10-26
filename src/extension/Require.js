@@ -16,11 +16,14 @@ function handleJavascript (context, handle, callback, options) {
     argnames = argnames.substr(0, argnames.length-1);
 
     //context._module, C.Extension.Require.bind(context)
-
-    eval('(function (' + argnames + ') {\
+    try {
+        eval('(function (' + argnames + ') {\
 ' + handle.asText() + '\
 }).apply(context._module.global, args);');
-    callback.call(context._module.global, null, api.module.exports);
+        callback.call(context._module.global, null, api.module.exports);
+    } catch (e) {
+        callback.call(context._module.global, e);
+    }
 };
 
 function handleDefault (context, handle, callback) {

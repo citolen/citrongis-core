@@ -64,13 +64,14 @@ C.Extension.Extension_ctr = function (handler, callback) {
 
         });
 
-        extension.run();
-        callback(null, extension);
+        extension.run(function (err) {
+            callback(err, extension);
+        });
     });
 };
 
 //TODO put strings in global file
-C.Extension.Extension.prototype.run = function () {
+C.Extension.Extension.prototype.run = function (callback) {
     var start_script = this._package.main || 'src/main.js';
     var self = this;
 
@@ -83,8 +84,13 @@ C.Extension.Extension.prototype.run = function () {
 
         self._module.addLayerToMap();
 
-        C.Extension.Require.call(self, start_script, function () {
+        C.Extension.Require.call(self, start_script, function (err) {
+            if (err) {
+                callback(err);
+                return self.emit('stopped', self);
+            }
             self.emit('started', self);
+            callback();
         });
     });
 };
