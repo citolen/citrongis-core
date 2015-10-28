@@ -45,8 +45,8 @@ C.Extension.Extension_ctr = function (handler, callback) {
 
         extension._module.ui.on('display', function (element, nowindow) {
 
-            element.style.top = '30%';
-            element.style.left = '15%';
+            element.style.top = '100px';
+            element.style.left = '100px';
             extension._map._extDiv.appendChild(element);
 
             if (!nowindow) {

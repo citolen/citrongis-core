@@ -71,7 +71,7 @@ C.Extension.API = function (context, options) {
             exports: {}
         },
         require: C.Extension.Require.bind(context),
-        window: (options.originalWindow) ? (window) : (context._module.global)
+//        window: (options.originalWindow) ? (window) : (context._module.global)
     };
 };
 

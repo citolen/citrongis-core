@@ -65,7 +65,7 @@ C.UI.Popup_ctr = function (args) {
 C.UI.Popup_ctr.prototype = C.UI.Popup.prototype;
 C.UI.Popup_new_ctr = function () {
     var obj = new C.UI.Popup_ctr(arguments);
-    obj._context = this
+    obj._context = this;
     return obj
 };
 

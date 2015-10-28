@@ -117,7 +117,7 @@ C.UI.PopupManager.unregister = function (popup) {
 C.UI.PopupManager.clearFromContext = function (context) {
     for (var i = 0; i < C.UI.PopupManager.popups.length; ++i) {
         var popup = C.UI.PopupManager.popups[i];
-        if (popup._context == context) {
+        if (popup._context._module == context._module) {
             C.UI.PopupManager.unregister(popup);
             --i;
         }
