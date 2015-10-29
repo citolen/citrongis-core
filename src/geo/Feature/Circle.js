@@ -98,7 +98,7 @@ C.Geo.Feature.Circle.prototype.location = function (location) {
  * @return {Number} Current or new radius.
  */
 C.Geo.Feature.Circle.prototype.radius = function (radius) {
-    if (radius === undefined || (typeof radius !== 'Number' && typeof radius !== 'Object') || this._radius == radius) {
+    if (radius === undefined || (typeof radius !== 'number') || this._radius == radius) {
         return this._radius;
     }
 

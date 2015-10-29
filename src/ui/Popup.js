@@ -15,8 +15,7 @@
  * @param {String} options.content Popup content.
  * @param {Boolean} [options.auto] Open popup when added.
  * @example
- *      var popup = C.Popup({
- *          feature: your_feature,
+ *      var popup = C.Popup(your_feature, {
  *          content: '<span>content</span>'
  *      });
  */
