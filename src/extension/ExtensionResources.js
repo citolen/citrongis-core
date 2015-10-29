@@ -11,6 +11,19 @@ C.Extension.ExtensionResources = function (handler, callback) {
         if (err) { return callback(true, self); }
         return callback(null, self);
     });
+    this._cache = {};
+};
+
+C.Extension.ExtensionResources.prototype.get = function (key) {
+    if (key in this._cache) {
+        return this._cache[key];
+    }
+    return null;
+};
+
+C.Extension.ExtensionResources.prototype.set = function (key, value) {
+    this._cache[key] = value;
+    return value;
 };
 
 C.Extension.ExtensionResources.prototype.checkHandler = function (callback) {
