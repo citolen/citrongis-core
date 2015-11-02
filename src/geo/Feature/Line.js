@@ -89,6 +89,7 @@ C.Geo.Feature.Line.prototype.locationAt = function (idx, location) {
     }
 
     this._locations[idx] = location;
+    this._locationChanged = true;
     this.emit('locationChanged', {idx: idx, location: location});
     this.makeDirty();
     return (location);

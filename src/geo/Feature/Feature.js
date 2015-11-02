@@ -34,10 +34,13 @@ C.Geo.Feature.Feature = C.Utils.Inherit(function (base, type, options) {
 
     this._interactive = options.interactive || false;
 
+    this._offset = options.offset;
+
 }, EventEmitter, 'C.Geo.Feature.Feature');
 
 C.Geo.Feature.Feature.OpacityMask = 1024;
 C.Geo.Feature.Feature.InteractiveMask = 2048;
+C.Geo.Feature.Feature.OffsetMask = 4096;
 C.Geo.Feature.Feature.InteractiveEvents = ['click', 'mousedown', 'mousemove', 'mouseup'];
 
 C.Geo.Feature.Feature.EventType = {
@@ -145,6 +148,25 @@ C.Geo.Feature.Feature.prototype.opacity = function (opacity) {
     return this._opacity;
 };
 
+/**
+ * Get/Set offset
+ *
+ * @method offset
+ * @public
+ * @param {Object} [offset] New offset {X:, Y:}.
+ * @return {Object} Current or new offset.
+ */
+C.Geo.Feature.Feature.prototype.offset = function (offset) {
+    if (offset == undefined || this._offset == offset) {
+        return (this._offset);
+    }
+
+    this._mask |= C.Geo.Feature.Feature.OffsetMask;
+    this._offset = offset;
+    this.makeDirty();
+    return this._offset;
+};
+
 C.Geo.Feature.Feature.prototype.makeDirty = function () {
     this._dirty = true;
     this.emit('dirty', this);
@@ -204,10 +226,14 @@ C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {
  */
 C.Geo.Feature.Feature.prototype.bindPopup = function (popup) {
 
+    var opened = false;
     this.on('click', function (feature, event) {
-
-        popup.open(event);
-
+        if (opened) {
+            popup.close();
+        } else {
+            popup.open(event);
+        }
+        opened = !opened;
     });
 
     return popup;
