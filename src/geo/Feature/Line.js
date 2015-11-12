@@ -66,6 +66,7 @@ C.Geo.Feature.Line.prototype.locations = function (locations) {
 
     this._locations = locations;
     this._locationChanged = true;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('locationsChanged', locations);
     this.makeDirty();
     return this._locations;
@@ -90,6 +91,7 @@ C.Geo.Feature.Line.prototype.locationAt = function (idx, location) {
 
     this._locations[idx] = location;
     this._locationChanged = true;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('locationChanged', {idx: idx, location: location});
     this.makeDirty();
     return (location);
@@ -104,11 +106,12 @@ C.Geo.Feature.Line.prototype.locationAt = function (idx, location) {
  * @return {Number} Current or new width.
  */
 C.Geo.Feature.Line.prototype.width = function (width) {
-    if (width === undefined || typeof width !== 'Number' || this._width === width) {
+    if (width === undefined || this._width === width) {
         return this._width;
     }
 
     this._width = width;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('widthChanged', width);
     this.makeDirty();
     return this._width;
@@ -123,11 +126,12 @@ C.Geo.Feature.Line.prototype.width = function (width) {
  * @return {Number} Current or new color.
  */
 C.Geo.Feature.Line.prototype.color = function (color) {
-    if (color === undefined || typeof color !== 'Array' || this._color === color) {
+    if (color === undefined || this._color === color) {
         return this._color;
     }
 
     this._color = color;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('colorChanged', color);
     this.makeDirty();
     return this._color;

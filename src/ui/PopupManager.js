@@ -98,6 +98,8 @@ C.UI.PopupManager.register = function (popup, event) {
     if (C.UI.PopupManager.popups.indexOf(popup) != -1) {
         return;
     }
+    popup._managerCallback = C.UI.PopupManager.updatePopup.bind(null, popup);
+    popup.feature.on('locationChanged', popup._managerCallback);
     C.UI.PopupManager.popups.push(popup);
     C.UI.PopupManager.propagateCSSContext(popup);
     C.UI.PopupManager.popupcontainer.appendChild(popup.dom);
@@ -108,6 +110,10 @@ C.UI.PopupManager.unregister = function (popup) {
     var idx;
     if ((idx = C.UI.PopupManager.popups.indexOf(popup)) == -1) {
         return;
+    }
+    if (popup._managerCallback) {
+        popup.feature.off('locationChanged', popup._managerCallback);
+        delete popup._managerCallback;
     }
     C.UI.PopupManager.popups.splice(idx, 1);
     C.UI.PopupManager.popupcontainer.removeChild(popup.dom);

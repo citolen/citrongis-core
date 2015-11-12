@@ -61,9 +61,13 @@ C.Extension.API = function (context, options) {
                 }
             },
             ondestroy: function (callback) {
-                context._module.global.onDestroyed = callback;
+//                context._module.global.onDestroyed = callback;
                 if (context._module.ui._isDestroyed) {
-                    return context._module.ui._destroyed();
+                    return callback();
+                } else {
+                    context.on('stopped', function (cb) {
+                        cb();
+                    }.bind(null, callback));
                 }
             }
         },
@@ -71,6 +75,7 @@ C.Extension.API = function (context, options) {
             exports: {}
         },
         require: C.Extension.Require.bind(context),
+        global: window
 //        window: (options.originalWindow) ? (window) : (context._module.global)
     };
 };

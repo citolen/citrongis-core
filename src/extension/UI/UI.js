@@ -16,6 +16,26 @@ dust.helpers.include = function (chunk, context, bodies, params) {
     });
 };
 
+dust.helpers.image = function (chunk, context, bodies, params) {
+    return chunk.map(function (chunk) {
+        var extension_context = context.stack.head._context;
+        extension_context._resources.file(params.src, function (err, handle) {
+            if (err) {
+                console.log('[fail]', params.src, 'unable to load');
+                chunk.end();
+            }
+            var bytes = handle.asUint8Array();
+            var binary = '';
+            for (var i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i])
+            }
+            var imageb64 = 'data:image/png;base64,' + window.btoa(binary);
+            chunk.write(imageb64);
+            chunk.end();
+        });
+    });
+};
+
 C.Extension.UI.UI = C.Utils.Inherit(C.Utils.Inherit(function (bridgeConstructor, eventEmitterConstructor, context) {
 
     bridgeConstructor();

@@ -71,6 +71,7 @@ C.Geo.Feature.Polygon.prototype.locations = function (locations) {
 
     this._locations = locations;
     this._locationChanged = true;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('locationsChanged', locations);
     this.makeDirty();
     return this._locations;
@@ -95,6 +96,7 @@ C.Geo.Feature.Polygon.prototype.locationAt = function (idx, location) {
 
     this._locations[idx] = location;
     this._locationChanged = true;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('locationChanged', {idx: idx, location: location});
     this.makeDirty();
     return (location);
@@ -114,6 +116,7 @@ C.Geo.Feature.Polygon.prototype.color = function (color) {
     }
 
     this._color = color;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('colorChanged', color);
     this.makeDirty();
     return this._color;
@@ -133,6 +136,7 @@ C.Geo.Feature.Polygon.prototype.outlineColor = function (outlineColor) {
     }
 
     this._outlineColor = outlineColor;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('outlineColorChanged', outlineColor);
     this.makeDirty();
     return this._outlineColor;
@@ -152,6 +156,7 @@ C.Geo.Feature.Polygon.prototype.outlineWidth = function (outlineWidth) {
     }
 
     this._outlineWidth = outlineWidth;
+    this._mask |= C.Geo.Feature.Feature.GenericMask;
     this.emit('outlineWidthChanged', outlineWidth);
     this.makeDirty();
     return this._outlineWidth;

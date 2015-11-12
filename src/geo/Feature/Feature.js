@@ -41,6 +41,7 @@ C.Geo.Feature.Feature = C.Utils.Inherit(function (base, type, options) {
 C.Geo.Feature.Feature.OpacityMask = 1024;
 C.Geo.Feature.Feature.InteractiveMask = 2048;
 C.Geo.Feature.Feature.OffsetMask = 4096;
+C.Geo.Feature.Feature.GenericMask = 8192;
 C.Geo.Feature.Feature.InteractiveEvents = ['click', 'mousedown', 'mousemove', 'mouseup'];
 
 C.Geo.Feature.Feature.EventType = {

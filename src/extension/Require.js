@@ -15,11 +15,14 @@ function handleJavascript (context, handle, callback, options) {
     }
     argnames = argnames.substr(0, argnames.length-1);
 
-    //context._module, C.Extension.Require.bind(context)
     try {
-        eval('(function (' + argnames + ') {\
+        if (options.windowScope) {
+            eval.call(window, handle.asText());
+        } else {
+            eval('(function (' + argnames + ') {\
 ' + handle.asText() + '\
 }).apply(context._module.global, args);');
+        }
         callback.call(context._module.global, null, api.module.exports);
     } catch (e) {
         callback.call(context._module.global, e);
@@ -47,15 +50,7 @@ C.Extension.Require_single = function (path, callback, options) {
     switch (pathType) {
         case 0: //web
 
-            $.get(path, function (data) {
-                handleExtensionType(self,
-                                    {
-                    asText: function (data) { return data; }.bind(null, data)
-                },
-                                    C.Utils.Path.getExtension(path),
-                                    callback,
-                                    options);
-            }, "text").fail(function () {
+            var fail = function () {
                 //TODO find a best way
                 var oldWrite = document.write;
                 document.write = function () {
@@ -67,7 +62,20 @@ C.Extension.Require_single = function (path, callback, options) {
                     document.write = oldWrite;
                     callback(err);
                 });
-            });
+            };
+            if (options.windowScope) {
+                return fail();
+            }
+
+            $.get(path, function (data) {
+                handleExtensionType(self,
+                                    {
+                    asText: function (data) { return data; }.bind(null, data)
+                },
+                                    C.Utils.Path.getExtension(path),
+                                    callback,
+                                    options);
+            }, "text").fail(fail);
 
             break;
         case 1: //relative to app
@@ -104,23 +112,25 @@ C.Extension.Require_single = function (path, callback, options) {
  */
 C.Extension.Require = function (path, callback, options) {
     //TODO debug
-    //console.log('[require]', path, 'from', this.currentPath);
+    //    console.log('[require]', path, 'from', this.currentPath);
 
     if (!callback) { callback = function(){}; }
+    var self = this;
 
     options = options || {};
     if (path.constructor === Array) {
         var exports = [];
-        var self = this;
         async.eachSeries(path, function (item, cb) {
             C.Extension.Require_single.call(self, item, function (err, expt) {
                 exports.push(expt);
                 cb(err);
             }, options);
         }, function (err) {
-            callback(err, exports);
+            callback.call(self._module.global, err, exports);
         });
     } else {
-        C.Extension.Require_single.call(this, path, callback, options);
+        C.Extension.Require_single.call(this, path, function () {
+            callback.apply(self._module.global, arguments);
+        }, options);
     }
 };

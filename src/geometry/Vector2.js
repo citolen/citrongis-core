@@ -46,6 +46,12 @@ C.Geometry.Vector2.prototype.Equals = function (vb) {
     return (false);
 };
 
+C.Geometry.Vector2.prototype.substract = function (vb) {
+    this.X -= vb.X;
+    this.Y -= vb.Y;
+    return this;
+};
+
 C.Geometry.Vector2.prototype.DotProduct = function (vb) {
     return (this.X * vb.X + this.Y * vb.Y);
 };
