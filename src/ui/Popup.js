@@ -23,14 +23,17 @@ C.UI.Popup = function (feature, options) {
     options = options || {};
 
     this.feature = feature;
+    this._initialized = false;
+    this._content = options.content;
+    this._opened = false;
+    this._initializedCallback = options.initialized;
 
     this.dom = document.createElement('div');
     this.dom.className = 'popup-container';
 
-    var wrapper = document.createElement('div');
-    wrapper.className = 'popup-wrapper';
-
-    wrapper.innerHTML = options.content;
+    this._wrapper = document.createElement('div');
+    this._wrapper.className = 'popup-wrapper';
+    this._selector = $(this._wrapper);
 
     var tip = document.createElement('div');
     tip.className = 'popup-tip-container';
@@ -46,7 +49,7 @@ C.UI.Popup = function (feature, options) {
         self.close();
     });
 
-    this.dom.appendChild(wrapper);
+    this.dom.appendChild(this._wrapper);
     this.dom.appendChild(tip);
     this.dom.appendChild(close);
 
@@ -68,6 +71,10 @@ C.UI.Popup_new_ctr = function () {
     return obj
 };
 
+C.UI.Popup.prototype.$ = function (selector) {
+    return this._selector.find(selector);
+};
+
 /**
  * Open the popup
  *
@@ -78,8 +85,23 @@ C.UI.Popup_new_ctr = function () {
 C.UI.Popup.prototype.open = function (event) {
 
     event = event.data.originalEvent;
-    C.UI.PopupManager.register(this, event);
-
+    this._opened = true;
+    if (!this._initialized) {
+        this._initialized = true;
+        var self = this;
+        this._context._module.ui.renderTemplate(this._content, function (err, output) {
+            if (err) {
+                return;
+            }
+            self._wrapper.innerHTML = output;
+            C.UI.PopupManager.register(self, event);
+            if (self._initializedCallback) {
+                self._initializedCallback(self);
+            }
+        });
+    } else {
+        C.UI.PopupManager.register(this, event);
+    }
 };
 
 /**
@@ -89,5 +111,14 @@ C.UI.Popup.prototype.open = function (event) {
  * @public
  */
 C.UI.Popup.prototype.close = function () {
+    this._opened = false;
     C.UI.PopupManager.unregister(this);
+};
+
+C.UI.Popup.prototype.toggle = function (event) {
+    if (this._opened) {
+        this.close();
+    } else {
+        this.open(event);
+    }
 };

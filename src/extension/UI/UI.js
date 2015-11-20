@@ -18,8 +18,18 @@ dust.helpers.include = function (chunk, context, bodies, params) {
 
 dust.helpers.image = function (chunk, context, bodies, params) {
     return chunk.map(function (chunk) {
-        var extension_context = context.stack.head._context;
-        extension_context._resources.file(params.src, function (err, handle) {
+        var stack = context.stack;
+        while (stack.tail != undefined) {
+            stack = stack.tail;
+        }
+        var extension_context = stack.head._context;
+        var src = params.src;
+        if (typeof src == 'function') {
+            src(chunk, context);
+            src = chunk.data[0];
+            chunk.data.splice(0, 1);
+        }
+        extension_context._resources.file(src, function (err, handle) {
             if (err) {
                 console.log('[fail]', params.src, 'unable to load');
                 chunk.end();
@@ -94,6 +104,23 @@ C.Extension.UI.UI.prototype.destroy = function () {
     this._destroy();
 };
 
+C.Extension.UI.UI.prototype.renderTemplate = function (content, callback) {
+    var name = this._context._package.name + (Math.floor(Math.random() * 10000));
+    var compiled = dust.compile(content, name);
+    dust.loadSource(compiled);
+
+    var context = C.Utils.Context.copy(this._context);
+    var citrongisCtx = {
+        _context: context
+    };
+
+    C.Utils.Object.merge(citrongisCtx, this._context._module.global);
+
+    dust.render(name, citrongisCtx, function (err, output) {
+        callback(err, output);
+    });
+};
+
 //TODO make this plateform independent
 C.Extension.UI.UI.prototype.display = function (path, nowindow) {
 
@@ -113,6 +140,11 @@ C.Extension.UI.UI.prototype.display = function (path, nowindow) {
         C.Utils.Object.merge(citrongisCtx, self._context._module.global);
 
         dust.render(name, citrongisCtx, function (err, output) {
+
+            if (err) {
+                console.error(err);
+                return;
+            }
 
             if (!self._container) {
                 self._container = document.createElement('div');

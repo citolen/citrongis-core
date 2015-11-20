@@ -227,14 +227,8 @@ C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {
  */
 C.Geo.Feature.Feature.prototype.bindPopup = function (popup) {
 
-    var opened = false;
     this.on('click', function (feature, event) {
-        if (opened) {
-            popup.close();
-        } else {
-            popup.open(event);
-        }
-        opened = !opened;
+        popup.toggle(event);
     });
 
     return popup;
