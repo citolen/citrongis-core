@@ -180,6 +180,9 @@ C.Geo.Feature.Feature.prototype.makeDirty = function () {
  * @param {Event} event
  */
 C.Geo.Feature.Feature.prototype.__mousedown = function (event) {
+    this.__isDown = true;
+    this.__moved = false;
+    this.__lastPoint = new C.Geometry.Vector2(event.data.global.x, event.data.global.y);
     this.emit('mousedown', this, event);
 };
 
@@ -190,6 +193,11 @@ C.Geo.Feature.Feature.prototype.__mousedown = function (event) {
  * @param {Event} event
  */
 C.Geo.Feature.Feature.prototype.__mousemove = function (event) {
+    if (this.__isDown) {
+        if (this.__lastPoint.X !== event.data.global.x || this.__lastPoint.Y != event.data.global.y) {
+            this.__moved = true;
+        }
+    }
     this.emit('mousemove', this, event);
 };
 
@@ -200,6 +208,7 @@ C.Geo.Feature.Feature.prototype.__mousemove = function (event) {
  * @param {Event} event
  */
 C.Geo.Feature.Feature.prototype.__mouseup = function (event) {
+    this.__isDown = false;
     this.emit('mouseup', this, event);
 };
 
@@ -210,7 +219,9 @@ C.Geo.Feature.Feature.prototype.__mouseup = function (event) {
  * @param {Event} event
  */
 C.Geo.Feature.Feature.prototype.__click = function (event) {
-    this.emit('click', this, event);
+    if (!this.__moved) {
+        this.emit('click', this, event);
+    }
 };
 
 C.Geo.Feature.Feature.prototype.addEventListener = function (event, fct) {

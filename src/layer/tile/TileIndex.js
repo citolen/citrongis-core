@@ -70,3 +70,7 @@ C.Layer.Tile.TileIndex.prototype.levelDown = function () {
              C.Layer.Tile.TileIndex.fromXYZ(x,   y+1, z),
              C.Layer.Tile.TileIndex.fromXYZ(x+1, y+1, z)]);
 };
+
+C.Layer.Tile.TileIndex.prototype.toString = function () {
+    return '(' + this._x + ',' + this._y + ',' + this._z + ')';
+};

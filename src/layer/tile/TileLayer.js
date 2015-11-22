@@ -45,6 +45,9 @@ C.Layer.Tile.TileLayer = C.Utils.Inherit(function (base, options) {
 
     this._initialized = false;
 
+    // If true display a debug grid
+    this._debug = options.debug || false;
+
     // Tile cache
     this._cache = new LRUCache({
         max: 200,
@@ -264,9 +267,43 @@ C.Layer.Tile.TileLayer.prototype.loadTile = function (tile, callback) {
         scaleMode: (C.Utils.Comparison.Equals(C.Helpers.viewport._rotation, 0)) ? C.Geo.Feature.Image.ScaleMode.NEAREST : C.Geo.Feature.Image.ScaleMode.DEFAULT
     });
 
+    if (this._debug) {
+        var debugLoc1 = this._schema.tileToWorld(tile,
+                                                 C.Helpers.viewport._resolution,
+                                                 rsize,
+                                                 0);
+        var debugLoc3 = this._schema.tileToWorld(tile,
+                                                 C.Helpers.viewport._resolution,
+                                                 rsize,
+                                                 1);
+        debugLoc1 = new C.Geometry.Point(debugLoc1.X, debugLoc1.Y, 0, C.Helpers.schema._crs);
+        var debugLoc2 = new C.Geometry.Point(debugLoc3.X, debugLoc1.Y, 0, C.Helpers.schema._crs);
+        debugLoc3 = new C.Geometry.Point(debugLoc3.X, debugLoc3.Y, 0, C.Helpers.schema._crs);
+        var debugLoc4 = new C.Geometry.Point(debugLoc1.X, debugLoc3.Y, 0, C.Helpers.schema._crs);
+        var debugLine = new C.Geo.Feature.Line({
+            locations: [debugLoc1, debugLoc2, debugLoc3, debugLoc4, debugLoc1],
+            color: 0x0,
+            width: 0.5
+        });
+        var debugText = new C.Geo.Feature.Text({
+            location: debugLoc1,
+            text: tile.toString(),
+            font: '15px Arial',
+            fill: 0x0,
+            offset: new C.Geometry.Vector2(5, 2)
+        });
+        var debug = new C.Geo.Layer();
+        debug.add(debugLine);
+        debug.add(debugText);
+    }
+
     this.addFeature(feature);
+    if (this._debug) {
+        this.addFeature(debug);
+    }
     this._tileInView[key] = {
         feature: feature,
+        debug: (this._debug) ? (debug) : null,
         tile: tile
     };
 
@@ -346,6 +383,9 @@ C.Layer.Tile.TileLayer.prototype.addedTile = function (addedTiles, viewport) {
             item.feature.location(new C.Geometry.Point(location.X, location.Y, 0, C.Helpers.schema._crs));
             item.feature.opacity(1);
             this.addFeature(item.feature);
+            if (this._debug) {
+                this.addFeature(item.debug);
+            }
             this.tileLoaded.call(this, key, true);
             continue;
 
@@ -389,9 +429,9 @@ C.Layer.Tile.TileLayer.prototype.createSubstitute = function (tile, zoomDirectio
                 else if (child._z < self._schema._resolutions.length && level < 3) {
                     if (explore(child, level + 1) != 4)
                         return 0;
-//                                        if (explore(child, level + 1) > 0) {
-//                                            ++cover;
-//                                        }
+                    //                                        if (explore(child, level + 1) > 0) {
+                    //                                            ++cover;
+                    //                                        }
                 }
             }
             return cover;
@@ -492,6 +532,10 @@ C.Layer.Tile.TileLayer.prototype.removedTile = function (removedTiles, viewport)
                 clearTimeout(o.opacity_animation);
             }
             this.removeFeature(o.feature);
+            //Add check debug enabled
+            if (this._debug && o.debug) {
+                this.removeFeature(o.debug);
+            }
             delete this._tileInView[key];
         }
     }

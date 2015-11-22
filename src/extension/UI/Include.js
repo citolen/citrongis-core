@@ -32,7 +32,7 @@ C.Extension.UI.Include = function (filepath, callback) {
             }
             var uid = self._package.name + '-' + C.Extension.UI.GenerateCSSUID();
 
-            var isolatedCSS = '.' + uid + '{\n'+data+'\n}';
+            var isolatedCSS = '@mobile: ' + C.System.isMobile + ';\n.' + uid + '{\n'+data+'\n}';
             less.render(isolatedCSS, function (e, output) {
                 self._module.ui.addClass(uid);
                 var s = document.createElement('style');
