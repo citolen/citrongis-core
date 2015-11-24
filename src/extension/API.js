@@ -44,7 +44,24 @@ C.Extension.API = function (context, options) {
             CoordinatesHelper: C.Helpers.CoordinatesHelper,
             ProjectionsHelper: C.Helpers.ProjectionsHelper,
             Utils: C.Utils,
-            Extension: C.Extension.Extension_ctr.bind(context)
+            Extension: C.Extension.Extension_ctr.bind(context),
+            System: {
+                isMobile: C.System.isMobile || (function detectmob() {
+                    if( navigator.userAgent.match(/Android/i)
+                       || navigator.userAgent.match(/webOS/i)
+                       || navigator.userAgent.match(/iPhone/i)
+                       || navigator.userAgent.match(/iPad/i)
+                       || navigator.userAgent.match(/iPod/i)
+                       || navigator.userAgent.match(/BlackBerry/i)
+                       || navigator.userAgent.match(/Windows Phone/i)
+                      ){
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                })()
+            }
         },
         E: {
             Display: context._module.ui.display.bind(context._module.ui),
@@ -61,7 +78,7 @@ C.Extension.API = function (context, options) {
                 }
             },
             ondestroy: function (callback) {
-//                context._module.global.onDestroyed = callback;
+                //                context._module.global.onDestroyed = callback;
                 if (context._module.ui._isDestroyed) {
                     return callback();
                 } else {
@@ -76,7 +93,7 @@ C.Extension.API = function (context, options) {
         },
         require: C.Extension.Require.bind(context),
         global: window
-//        window: (options.originalWindow) ? (window) : (context._module.global)
+        //        window: (options.originalWindow) ? (window) : (context._module.global)
     };
 };
 

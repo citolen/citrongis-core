@@ -15,9 +15,10 @@ C.Helpers.ResolutionHelper.resolutionForZoom = function (zoomLevel) {
 };
 
 C.Helpers.ResolutionHelper.getZoomLevel = function (resolution) {
-    for (var i = 0; i < C.Helpers.ResolutionHelper.Resolutions.length; ++i) {
+     for (var i = 0; i < C.Helpers.ResolutionHelper.Resolutions.length; ++i) {
         var res = C.Helpers.ResolutionHelper.Resolutions[i];
-        if (resolution > res || C.Utils.Comparison.Equals(resolution, res)) {
+        if (resolution > res && !C.Utils.Comparison.Equals(resolution, res)) {
+            i = (i > 0) ? (i - 1) : (0);
             return (i);
         }
     }

@@ -96,7 +96,25 @@ C.System.Viewport.prototype.getMaxZoomLevel = function () {
 C.System.Viewport.prototype.getZoomLevel = function () {
     for (var i = 0; i < this._schema._resolutions.length; ++i) {
         var res = this._schema._resolutions[i];
-        if (this._resolution > res || C.Utils.Comparison.Equals(this._resolution, res)) {
+        if (this._resolution > res && !C.Utils.Comparison.Equals(this._resolution, res)) {
+            i = (i > 0) ? (i - 1) : (0);
+            return (i);
+        }
+    }
+    return (this._schema._resolutions.length - 1);
+};
+
+C.System.Viewport.prototype.getDecimalZoomLevel = function () {
+    for (var i = 0; i < this._schema._resolutions.length; ++i) {
+        var res = this._schema._resolutions[i];
+        if (C.Utils.Comparison.Equals(this._resolution, res)) {
+            return (i);
+        }
+        if (this._resolution > res) {
+            if (i < this._schema._resolutions.length - 1) {
+                var diff = Math.abs(res - this._schema._resolutions[i - 1]);
+                i -= ((this._resolution - res) / diff);
+            }
             return (i);
         }
     }
@@ -112,7 +130,22 @@ C.System.Viewport.prototype.getZoomLevel = function () {
  * @return {Number} Resolution for the given zoom level.
  */
 C.System.Viewport.prototype.getResolutionAtZoomLevel = function (zoomLevel) {
-    return this._schema._resolutions[zoomLevel];
+    var integer = Math.floor(zoomLevel);
+    var decimal = zoomLevel - integer;
+
+    if (zoomLevel < 0) {
+        return this._schema._resolutions[0];
+    }
+    if (zoomLevel > this._schema._resolutions.length - 1) {
+        return this._schema._resolutions[this._schema._resolutions.length - 1];
+    }
+
+    var res = this._schema._resolutions[integer];
+    if (zoomLevel < this._schema._resolutions.length - 1) {
+        var diff = Math.abs(this._schema._resolutions[integer] - this._schema._resolutions[integer + 1]);
+        res -= decimal * diff;
+    }
+    return res;
 };
 
 /**
