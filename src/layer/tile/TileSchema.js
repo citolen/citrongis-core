@@ -40,7 +40,6 @@ C.Layer.Tile.TileSchema = C.Utils.Inherit(function (base, option) {
 }, EventEmitter, 'C.Layer.Tile.TileSchema');
 
 C.Layer.Tile.TileSchema.prototype.register = function () {
-    this._unchangedTiles = {};
     this.emit('register');
 };
 
