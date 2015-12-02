@@ -226,6 +226,7 @@ C.System.Viewport.prototype.resize = function (newWidth, newHeight, noEvent) {
     this._height = newHeight;
     this._mask |= C.System.Viewport.ActionMask.RESIZE;
     this._update(noEvent);
+    this.emit('resized', this);
 };
 
 C.System.Viewport.prototype._update = function (noEvent) {

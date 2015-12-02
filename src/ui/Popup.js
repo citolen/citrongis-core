@@ -19,8 +19,10 @@
  *          content: '<span>content</span>'
  *      });
  */
-C.UI.Popup = function (feature, options) {
+C.UI.Popup = C.Utils.Inherit(function (base, feature, options) {
     options = options || {};
+
+    base();
 
     this.feature = feature;
     this._initialized = false;
@@ -56,7 +58,7 @@ C.UI.Popup = function (feature, options) {
     if (options.auto) {
         this.open();
     }
-};
+}, EventEmitter, 'C.UI.Popup');
 
 /*
  *  Constructor
@@ -113,6 +115,7 @@ C.UI.Popup.prototype.open = function (event) {
 C.UI.Popup.prototype.close = function () {
     this._opened = false;
     C.UI.PopupManager.unregister(this);
+    this.emit('close', this);
 };
 
 C.UI.Popup.prototype.toggle = function (event) {

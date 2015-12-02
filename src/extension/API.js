@@ -18,6 +18,7 @@ C.Extension.API = function (context, options) {
 
             Layer: C.Geo.Layer_new_ctr,
             Layer_class: C.Geo.Layer,
+            PerformanceLayer: C.Geo.PerformanceLayer_new_ctr,
             TileLayer: C.Layer.Tile.TileLayer_new_ctr,
             TMSSource: C.Layer.Tile.Source.TMSSource_new_ctr,
             TileSchema: {

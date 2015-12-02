@@ -24,7 +24,6 @@ C.Extension.UI.Include = function (filepath, callback) {
 
     if (file_extension == 'css') {
         //TODO add debug
-        //console.log('[CSS include]', filepath);
 
         return C.Extension.Require.call(this, filepath, function (err, data) {
             if (err) {
@@ -32,14 +31,31 @@ C.Extension.UI.Include = function (filepath, callback) {
             }
             var uid = self._package.name + '-' + C.Extension.UI.GenerateCSSUID();
 
-            var isolatedCSS = '@mobile: ' + C.System.isMobile + ';\n.' + uid + '{\n'+data+'\n}';
-            less.render(isolatedCSS, function (e, output) {
-                self._module.ui.addClass(uid);
-                var s = document.createElement('style');
-                s.innerHTML = output.css;
-                document.getElementsByTagName('head')[0].appendChild(s);
-                callback();
-            });
+            if(navigator &&
+               (navigator.userAgent.match(/iPhone/i)
+                || navigator.userAgent.match(/iPad/i)
+                || navigator.userAgent.match(/iPod/i)
+               )) {
+                var isolatedCSS = '@mobile: false;\n.' + uid + '{\n'+data+'\n}';
+                $.post('http://52.10.137.45:8080/', {css: isolatedCSS}, function (data, success) {
+                    if (data && success === "success") {
+                        self._module.ui.addClass(uid);
+                        var s = document.createElement('style');
+                        s.innerHTML = data;
+                        document.getElementsByTagName('head')[0].appendChild(s);
+                    }
+                    callback();
+                });
+            } else {
+                var isolatedCSS = '@mobile: ' + C.System.isMobile + ';\n.' + uid + '{\n'+data+'\n}';
+                less.render(isolatedCSS, function (e, output) {
+                    self._module.ui.addClass(uid);
+                    var s = document.createElement('style');
+                    s.innerHTML = output.css;
+                    document.getElementsByTagName('head')[0].appendChild(s);
+                    callback();
+                });
+            }
         });
     }
     //    if (file_extension == 'js') {
