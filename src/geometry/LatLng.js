@@ -25,10 +25,10 @@ C.Geometry.LatLng = C.Utils.Inherit(function (base, y, x) {
 /*
  *  Constructor
  */
-C.Geometry.LatLng_ctr = function (args) {
-    return C.Geometry.LatLng.apply(this, args);
-};
-C.Geometry.LatLng_ctr.prototype = C.Geometry.LatLng.prototype;
-C.Geometry.LatLng_new_ctr = function () {
-    return new C.Geometry.LatLng_ctr(arguments);
+//C.Geometry.LatLng_ctr = function (args) {
+//    return C.Geometry.LatLng.apply(this, args);
+//};
+//C.Geometry.LatLng_ctr.prototype = C.Geometry.LatLng.prototype;
+C.Geometry.LatLng_new_ctr = function (y, x) {
+    return new C.Geometry.LatLng(y, x);
 };

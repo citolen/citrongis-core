@@ -197,8 +197,8 @@ C.Geo.Feature.Feature.prototype.__mousemove = function (event) {
         if (this.__lastPoint.X !== event.data.global.x || this.__lastPoint.Y != event.data.global.y) {
             this.__moved = true;
         }
+        this.emit('mousemove', this, event);
     }
-    this.emit('mousemove', this, event);
 };
 
 /**

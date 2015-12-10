@@ -53,7 +53,11 @@ C.Geo.Feature.Polygon_ctr = function (args) {
 };
 C.Geo.Feature.Polygon_ctr.prototype = C.Geo.Feature.Polygon.prototype;
 C.Geo.Feature.Polygon_new_ctr = function () {
-    return new C.Geo.Feature.Polygon_ctr(arguments);
+    var args = new Array(arguments.length);
+    for (var i = 0, l = arguments.length; i < l; ++i) {
+        args[i] = arguments[i];
+    }
+    return new C.Geo.Feature.Polygon_ctr(args);
 };
 
 /**

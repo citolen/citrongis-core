@@ -16,6 +16,16 @@ C.Geo.PerformanceLayer = C.Utils.Inherit(function (base, options) {
                                                     C.Helpers.viewport._width,
                                                     C.Helpers.viewport._height);
 
+    this._quadtree = new C.Utils.QuadTree({
+        bl_x: -20037508.342789,
+        bl_y: -20037508.342789,
+        tr_x: 20037508.342789,
+        tr_y: 20037508.342789,
+        crs: C.Helpers.ProjectionsHelper.EPSG3857,
+        maxObj: 10,
+        maxDepth: 18
+    });
+
     this._root = new C.Geo.Layer();
     this._root.on('dirty', function () {
         C.Helpers.customRenderer.layerChange.call(C.Helpers.customRenderer,
@@ -44,11 +54,29 @@ C.Geo.PerformanceLayer = C.Utils.Inherit(function (base, options) {
         height: C.Helpers.viewport._height,
         offset: new C.Geometry.Vector2(-C.Helpers.viewport._width/2, -C.Helpers.viewport._height/2)
     });
+    function processEvent(evt, fct) {
+        var worldPt = C.Helpers.viewport.screenToWorld(evt.data.global.x, evt.data.global.y);
+        var r = C.Helpers.viewport._resolution * 5;
+        worldPt.X -= r;
+        worldPt.Y -= r;
+        var bounds = new C.Geometry.Bounds(worldPt, new C.Geometry.Vector2(worldPt.X + 2*r, worldPt.Y + 2*r), C.Helpers.viewport._schema._crs);
+
+        var containerToRender = self._quadtree.select(bounds);
+        for (var i = 0; i < containerToRender.length; ++i) {
+            C.Helpers.renderer.plugins.interaction.processInteractive(evt.data.global, containerToRender[i], fct, true);
+        }
+    }
     this._sprite.on('mousedown', function (f, evt) {
-        C.Helpers.renderer.plugins.interaction.processInteractive(evt.data.global, self._root.__graphics, C.Helpers.renderer.plugins.interaction.processMouseDown, true);
+        processEvent(evt, C.Helpers.renderer.plugins.interaction.processMouseDown);
+    });
+    this._sprite.on('mousemove', function (f, evt) {
+        if (self._aFrameID != undefined) {
+            self.cancelDefered();
+        }
+        processEvent(evt, C.Helpers.renderer.plugins.interaction.processMouseMove);
     });
     this._sprite.on('mouseup', function (f, evt) {
-        C.Helpers.renderer.plugins.interaction.processInteractive(evt.data.global, self._root.__graphics, C.Helpers.renderer.plugins.interaction.processMouseUp, true);
+        processEvent(evt, C.Helpers.renderer.plugins.interaction.processMouseUp);
     });
     C.Geo.Layer.prototype.add.call(this, this._sprite);
 
@@ -56,9 +84,13 @@ C.Geo.PerformanceLayer = C.Utils.Inherit(function (base, options) {
     this._moved = this.moved.bind(this);
     this._vmove = this.vmove.bind(this);
     this._resize = this.resize.bind(this);
+    this._deferedRendering = this.deferedRendering.bind(this);
+    this._deferedInvalidateAndRendering = this.deferedInvalidateAndRendering.bind(this);
 
     this.on('added', this._added.bind(this));
     this.on('removed', this._removed.bind(this));
+
+    this._renderDirty = false;
 
 }, C.Geo.Layer, 'C.Geo.PerformanceLayer');
 
@@ -85,9 +117,37 @@ C.Geo.PerformanceLayer.prototype._removed = function () {
     C.Helpers.viewport.off('resized', this._resize);
 };
 
+C.Geo.PerformanceLayer.prototype.deferedRendering = function () {
+    var startTime = Date.now();
+    while (this._toRender.length > 0) {
+        var toRender = this._toRender.splice(0, 1);
+        this._renderingTexture.render(toRender[0], null);
+        if (Date.now() - startTime > 20) {
+            this._aFrameID = requestAnimationFrame(this._deferedRendering);
+            return;
+        }
+    }
+    this._aFrameID = undefined;
+};
+
 C.Geo.PerformanceLayer.prototype.render = function () {
+    if (this._aFrameID != undefined) {
+        this.cancelDefered();
+    }
     this._renderAt = C.Helpers.viewport._resolution;
-    this._renderingTexture.render(this._root.__graphics, null, true);
+    var bounds = C.Helpers.viewport.getBounds();
+    this._toRender = this._quadtree.select(bounds);
+    var startTime = Date.now();
+    var i = 0;
+    while (this._toRender.length > 0) {
+        var toRender = this._toRender.splice(0, 1);
+        this._renderingTexture.render(toRender[0], null, i++ == 0);
+        if (Date.now() - startTime > 20) {
+            this._aFrameID = requestAnimationFrame(this._deferedRendering);
+            break;
+        }
+    }
+
     if (this._sprite) {
         var width = C.Helpers.viewport._width;
         var height = C.Helpers.viewport._height;
@@ -100,11 +160,14 @@ C.Geo.PerformanceLayer.prototype.render = function () {
 C.Geo.PerformanceLayer.prototype.resize = function () {
     this._renderingTexture.resize(C.Helpers.viewport._width,
                                   C.Helpers.viewport._height,
-                                 true);
+                                  true);
     this.render();
 };
 
 C.Geo.PerformanceLayer.prototype.vmove = function () {
+    if (this._aFrameID != undefined) {
+        this.cancelDefered();
+    }
     if (C.Helpers.viewport._zoomDirection == C.System.Viewport.zoomDirection.NONE) {
         return;
     }
@@ -116,14 +179,63 @@ C.Geo.PerformanceLayer.prototype.vmove = function () {
     this._sprite.offset(new C.Geometry.Vector2(-width/2, -height/2));
 };
 
+C.Geo.PerformanceLayer.prototype.deferedInvalidateAndRendering = function () {
+    var startTime = Date.now();
+    while (this._toInvalidateAndRender.length > 0) {
+        var toInvalidateAndRender = this._toInvalidateAndRender.splice(0, 1);
+        C.Helpers.customRenderer.layerUpdatePositions.call(C.Helpers.customRenderer,
+                                                           toInvalidateAndRender[0].objects,
+                                                           C.System.Viewport.zoomDirection.IN);
+        this._renderingTexture.render(toInvalidateAndRender[0].container, null);
+        if (Date.now() - startTime > 20) {
+            this._aFrameID = requestAnimationFrame(this._deferedInvalidateAndRendering);
+            return;
+        }
+    }
+    this._aFrameID = undefined;
+};
+
+C.Geo.PerformanceLayer.prototype.cancelDefered = function () {
+    cancelAnimationFrame(this._aFrameID);
+    this._aFrameID = undefined;
+};
+
 C.Geo.PerformanceLayer.prototype.moved = function () {
+    if (this._aFrameID != undefined) {
+        this.cancelDefered();
+    }
+
     this._sprite.location(new C.Geometry.Point(C.Helpers.viewport._origin.X,
                                                C.Helpers.viewport._origin.Y, 0,
                                                C.Helpers.ProjectionsHelper.EPSG3857));
-    C.Helpers.customRenderer.layerUpdatePositions.call(C.Helpers.customRenderer,
-                                                       this._root,
-                                                       C.System.Viewport.zoomDirection.IN);
-    this.render();
+    var bounds = C.Helpers.viewport.getBounds();
+    this._toInvalidateAndRender = this._quadtree.selectObject(bounds);
+    this._renderAt = C.Helpers.viewport._resolution;
+    var startTime = Date.now();
+    var i = 0;
+    while (this._toInvalidateAndRender.length > 0) {
+        var toInvalidateAndRender = this._toInvalidateAndRender.splice(0, 1);
+        C.Helpers.customRenderer.layerUpdatePositions.call(C.Helpers.customRenderer,
+                                                           toInvalidateAndRender[0].objects,
+                                                           C.System.Viewport.zoomDirection.IN);
+        this._renderingTexture.render(toInvalidateAndRender[0].container, null, i++ == 0);
+        if (Date.now() - startTime > 20) {
+            this._aFrameID = requestAnimationFrame(this._deferedInvalidateAndRendering);
+            break;
+        }
+    }
+
+    if (this._sprite) {
+        var width = C.Helpers.viewport._width;
+        var height = C.Helpers.viewport._height;
+        this._sprite.width(width);
+        this._sprite.height(height);
+        this._sprite.offset(new C.Geometry.Vector2(-width/2, -height/2));
+    }
+    //    C.Helpers.customRenderer.layerUpdatePositions.call(C.Helpers.customRenderer,
+    //                                                       objects,
+    //                                                       C.System.Viewport.zoomDirection.IN);
+    //    this.render();
 };
 
 C.Geo.PerformanceLayer.prototype.frame = function () {
@@ -132,11 +244,14 @@ C.Geo.PerformanceLayer.prototype.frame = function () {
     this._dirty = false;
 };
 
-C.Geo.PerformanceLayer.prototype.addLayer = C.Geo.PerformanceLayer.prototype.addFeature = C.Geo.PerformanceLayer.prototype.add = function () {
-    return this._root.add.apply(this._root, arguments);
+C.Geo.PerformanceLayer.prototype.addLayer = C.Geo.PerformanceLayer.prototype.addFeature = C.Geo.PerformanceLayer.prototype.add = function (f) {
+    this._root.add.apply(this._root, arguments);
+    this._quadtree.insert(f);
+    return;
 };
 
 C.Geo.PerformanceLayer.prototype.removeLayer = C.Geo.PerformanceLayer.prototype.removeFeature = C.Geo.PerformanceLayer.prototype.remove = function () {
+    this._quadtree.remove(f);
     return this._root.remove.apply(this._root, arguments);
 };
 
@@ -145,7 +260,9 @@ C.Geo.PerformanceLayer.prototype.moveLayer = C.Geo.PerformanceLayer.prototype.mo
 };
 
 C.Geo.PerformanceLayer.prototype.clearLayer = function () {
-    return this._root.clearLayer.apply(this._root, arguments);
+    this._quadtree.clear();
+    this._root.clearLayer.apply(this._root, arguments);
+    this.render();
 };
 
 C.Geo.PerformanceLayer.prototype.getBounds = function () {

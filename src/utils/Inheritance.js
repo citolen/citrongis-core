@@ -20,28 +20,36 @@ C.Utils.Inherit = function (constructor, classToInherit, name) {
     var _;
     if (name === undefined) {
         _ = function () {
+            var args1 = new Array(arguments.length);
+            for (var i = 0, l = arguments.length; i < l; ++i) {
+                args1[i] = arguments[i];
+            }
             var self = this;
             var baseInit = false;
             var base = function () {
                 baseInit = true;
                 classToInherit.apply(self, arguments);
             };
-            var args = [base].concat(Array.prototype.slice.call(arguments));
-            constructor.apply(this, args);
+            args1 = [base].concat(args1);
+            constructor.apply(this, args1);
             if (!baseInit) {
                 classToInherit.apply(this, arguments);
             }
         };
     } else {
         _ = eval(name + ' = function () {\
+var args1 = new Array(arguments.length);\
+for (var i = 0, l = arguments.length; i < l; ++i) {\
+args1[i] = arguments[i];\
+}\
 var self = this;\
 var baseInit = false;\
 var base = function () {\
 baseInit = true;\
 classToInherit.apply(self, arguments);\
 };\
-var args = [base].concat(Array.prototype.slice.call(arguments));\
-constructor.apply(this, args);\
+args1 = [base].concat(args1);\
+constructor.apply(this, args1);\
 if (!baseInit) {\
 classToInherit.apply(this, arguments);\
 }};');
