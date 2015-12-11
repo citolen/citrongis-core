@@ -182,7 +182,7 @@ C.Geo.Feature.Feature.prototype.makeDirty = function () {
 C.Geo.Feature.Feature.prototype.__mousedown = function (event) {
     this.__isDown = true;
     this.__moved = false;
-    this.__lastPoint = new C.Geometry.Vector2(event.data.global.x, event.data.global.y);
+    this.__lastPoint = event.getScreenPosition();
     this.emit('mousedown', this, event);
 };
 
@@ -194,7 +194,8 @@ C.Geo.Feature.Feature.prototype.__mousedown = function (event) {
  */
 C.Geo.Feature.Feature.prototype.__mousemove = function (event) {
     if (this.__isDown) {
-        if (this.__lastPoint.X !== event.data.global.x || this.__lastPoint.Y != event.data.global.y) {
+        var screenPosition = event.getScreenPosition();
+        if (this.__lastPoint.X !== screenPosition.X || this.__lastPoint.Y != screenPosition.Y) {
             this.__moved = true;
         }
         this.emit('mousemove', this, event);

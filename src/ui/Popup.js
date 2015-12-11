@@ -85,8 +85,6 @@ C.UI.Popup.prototype.$ = function (selector) {
  * @param {Event} event Event from click event on feature.
  */
 C.UI.Popup.prototype.open = function (event) {
-
-    event = event.data.originalEvent;
     this._opened = true;
     if (!this._initialized) {
         this._initialized = true;

@@ -55,7 +55,8 @@ C.Geo.PerformanceLayer = C.Utils.Inherit(function (base, options) {
         offset: new C.Geometry.Vector2(-C.Helpers.viewport._width/2, -C.Helpers.viewport._height/2)
     });
     function processEvent(evt, fct) {
-        var worldPt = C.Helpers.viewport.screenToWorld(evt.data.global.x, evt.data.global.y);
+        var screenPosition = evt.getScreenPosition();
+        var worldPt = C.Helpers.viewport.screenToWorld(screenPosition.X, screenPosition.Y);
         var r = C.Helpers.viewport._resolution * 5;
         worldPt.X -= r;
         worldPt.Y -= r;
@@ -63,7 +64,10 @@ C.Geo.PerformanceLayer = C.Utils.Inherit(function (base, options) {
 
         var containerToRender = self._quadtree.select(bounds);
         for (var i = 0; i < containerToRender.length; ++i) {
-            C.Helpers.renderer.plugins.interaction.processInteractive(evt.data.global, containerToRender[i], fct, true);
+            C.Helpers.renderer.plugins.interaction.processInteractive({
+                x: screenPosition.X,
+                y: screenPosition.Y
+            }, containerToRender[i], fct, true);
         }
     }
     this._sprite.on('mousedown', function (f, evt) {

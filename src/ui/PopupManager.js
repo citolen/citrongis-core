@@ -38,23 +38,24 @@ C.UI.PopupManager.update = function () {
 C.UI.PopupManager.updatePopup = function (popup, event) {
     if (!popup.location) {
         if (event) {
-            var ex = event.offsetX;
-            var ey = event.offsetY;
-            if (!ex || !ey) {
-                if (event.changedTouches.length > 0) {
-                    ex = event.changedTouches[0].pageX;
-                    ey = event.changedTouches[0].pageY;
-                }
-            }
-            popup.location = C.Helpers.viewport.screenToWorld(ex, ey);
+//            var ex = event.offsetX;
+//            var ey = event.offsetY;
+//            if (!ex || !ey) {
+//                if (event.changedTouches.length > 0) {
+//                    ex = event.changedTouches[0].pageX;
+//                    ey = event.changedTouches[0].pageY;
+//                }
+//            }
+            var screenPosition = event.getScreenPosition();
+            popup.location = C.Helpers.viewport.screenToWorld(screenPosition.X, screenPosition.Y);
             if (popup.feature.location) {
                 var location;
                 location = popup.feature.location();
                 location = C.Helpers.CoordinatesHelper.TransformTo(location, C.Helpers.viewport._schema._crs);
                 var position = C.Helpers.viewport.worldToScreen(location.X, location.Y);
                 popup.offset = {
-                    x: ex - position.X,
-                    y: ey - position.Y
+                    x: screenPosition.X - position.X,
+                    y: screenPosition.Y - position.Y
                 };
             }
         } else { return; }
