@@ -58,6 +58,17 @@ C.System.Viewport.ActionMask = {
 };
 
 /**
+ * Returns the current CRS of the system.
+ *
+ * @method getCRS
+ * @public
+ * @return {Proj4Projection} Viewport's CRS.
+ */
+C.System.Viewport.prototype.getCRS = function () {
+    return this._schema._crs;
+};
+
+/**
  * Returns the bounds of the view.
  *
  * @method getBounds
