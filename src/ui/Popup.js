@@ -19,7 +19,7 @@
  *          content: '<span>content</span>'
  *      });
  */
-C.UI.Popup = C.Utils.Inherit(function (base, feature, options) {
+C.UI.Popup = C.Utils.Inherit(function (base, feature, options, initialized) {
     options = options || {};
 
     base();
@@ -28,7 +28,7 @@ C.UI.Popup = C.Utils.Inherit(function (base, feature, options) {
     this._initialized = false;
     this._content = options.content;
     this._opened = false;
-    this._initializedCallback = options.initialized;
+    this._initializedCallback = initialized;
 
     this.dom = document.createElement('div');
     this.dom.className = 'popup-container';
