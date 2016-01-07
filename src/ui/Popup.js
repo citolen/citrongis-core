@@ -29,6 +29,7 @@ C.UI.Popup = C.Utils.Inherit(function (base, feature, options, initialized) {
     this._content = options.content;
     this._opened = false;
     this._initializedCallback = initialized;
+    this._metadata = options.metadata || {};
 
     this.dom = document.createElement('div');
     this.dom.className = 'popup-container';
@@ -102,6 +103,35 @@ C.UI.Popup.prototype.open = function (event) {
     } else {
         C.UI.PopupManager.register(this, event);
     }
+};
+
+/**
+ * Set a metadata
+ *
+ * @method set
+ * @public
+ * @param {Object} key Key link to value.
+ * @param {Object} value Value to store.
+ * @return {Object} Added value.
+ */
+C.UI.Popup.prototype.set = function (key, value) {
+    this._metadata[key] = value;
+    return value;
+};
+
+/**
+ * Get a metadata
+ *
+ * @method get
+ * @public
+ * @param {Object} key Key link to value.
+ * @return {Object} Key value or null if not found.
+ */
+C.UI.Popup.prototype.get = function (key) {
+    if (key in this._metadata) {
+        return this._metadata[key];
+    }
+    return null;
 };
 
 /**
